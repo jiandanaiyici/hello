@@ -1,0 +1,96 @@
+---
+id: top-api
+slug: /top-api
+title: 顶层API
+sidebar_label: 顶层API
+---
+
+### 简介
+
+> 在之前无论是创建组件或者是其他的一些数据状态管理上都已经使用到了一些如 `Component` 之类顶层的 API, 这里就是一些系统式的归纳, 也方便后期可以进行一些回顾
+
+### 组件
+
+> 通过 `ES6` [Classes](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Classes) 的方式来定义一些符合一些业务场景或者通用性的组件,
+> 每个组件内都包含特定的状态等. 以下是通过两种不同的方式进行简单演示, 稍后再仔细查看两者之间的区别
+
+#### Component
+
+```tsx live
+class Welcome extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      message: 'This is a class Component',
+    };
+  }
+
+  render() {
+    return <div>{this.state.message}</div>;
+  }
+}
+```
+
+#### PureComponent
+
+```jsx live
+class Welcome extends React.PureComponent {
+  constructor() {
+    super();
+    this.state = {
+      message: 'This is a class Component',
+    };
+  }
+
+  render() {
+    return <div>{this.state.message}</div>;
+  }
+}
+```
+
+> 两种创建方式都已经创建好了, 初始化的值也已经可以运行了, 从代码上看的区别是除了继承的父类不一样之外没有其他的区别. 那么为什么会有两种不同的父类呢
+> 这里就有一个性能优化的功能包含在里边, 普通情况下使用 `Component` 无论是接受父组件的数据 还是内部状态的变化都会导致组件的重新 `render`, 如果应用
+> 比较大的情况下就会导致一些不需要的性能开销, 那么可以通过 [`shouldComponentUpdate`](https://zh-hans.reactjs.org/docs/react-component.html#shouldcomponentupdate)
+> 来进行优化, 当比较之后返回值是 `true` 表示需要进行更新, 如果返回的是 `false` 表示不需要更新, 而 `PureComponent`就等于 `React` 内部帮助我们做了一些比较, 但是也只是做了[浅层比较](https://imweb.io/topic/598973c2c72aa8db35d2e291) [Object.is](<https://www.jstips.co/zh_cn/javascript/why-you-should-use-Object.is()-in-equality-comparison/>)
+> 也就是说如果接收父组件的 `props` 是一个比较深层的对象时使用此父类创建组件就没有办法帮助我们更好的做一些性能优化的事情, 那么就可以通过 `shouldComponentUpdate` 来手动优化
+
+```jsx live
+class Welcome extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      message: 'This is a class Component',
+    };
+    this.reverse = this.reverseMsg.bind(this);
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    // 这里做一个简单的演示使用方法
+    return nextState.message === this.state.message;
+    // return nextState.message !== this.state.message;
+  }
+
+  reverseMsg() {
+    this.setState((prevState) => ({
+      message: prevState.message.split('').reverse().join(''),
+    }));
+  }
+
+  render() {
+    return (
+      <div>
+        <button onClick={this.reverse}> Click Me</button>
+        {this.state.message}
+      </div>
+    );
+  }
+}
+```
+
+> 可以通过 `shouldComponentUpdate`制定一些想要的效果, 不过通常情况下是不需要的, 比如代码中的 `nextState.message === this.state.message` 虽然我们通过点击事件将字符串
+> 进行了逆转, 但是在这里的返回值一直都是 `false` 所以并没有更新我们所期望的效果, 那么如果使用代码中注释的代码`nextState.message !== this.state.message;`的话就可以看到每次点击之后的
+> `UI`展示是所期望看到的, (这里说明一下为什么只使用了 `state`, 因为目前使用的在线实时编辑预览的方式还不是很熟, 如果需要引入子组件的话可能比较麻烦, 只是一个简单的演示)
+
+> 现在应该已经知道了这两个父类创建的组件之间有什么样的区别了, 那么就要在使用中对此有一些判断什么情况下使用什么父类创建. 当然除了这种方式还有很多其他的方法, 并且也提供了
+> 针对优化分析的 [Profiler](https://reactjs.org/docs/profiler.html), 以及 `useMemo` `useCallback` 等 hooks 和 `memo`
+

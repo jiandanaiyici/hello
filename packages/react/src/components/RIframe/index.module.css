@@ -1,0 +1,41 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  padding: 5px 12px;
+}
+
+.header .title {
+  flex: 100%;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.header .extra {
+  float: right;
+  flex: none;
+}
+
+.content {
+  flex: 100%;
+  position: relative;
+}
+
+.content .iframe_wrapper {
+  min-height: 300px;
+  position: relative;
+}
+
+.loading {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 100%;
+  background-color: red;
+}

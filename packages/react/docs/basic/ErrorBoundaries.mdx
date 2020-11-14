@@ -1,0 +1,80 @@
+---
+slug: ErrorBoundaries
+title: 异常捕获
+author: 聂晓飞
+author_title: 流浪者
+author_url: https://github.com/niexiaofei1988
+---
+
+> 开发中会因为错误没有处理好从而导致页面白屏, 应用挂掉. 一般是使用 `try catch` 进行捕获兼容处理, 在 `React` 中也会有类似的情况, 比如不支持 `Object` 或者其他的值引用失败等情况, 提供了一种异常处理的方法 componentDidCatch
+> 包含有两个参数 `error`: 抛出的错误 `info`: 带有 `componentStack` `key` 的对象, 可以在此处将错误信息传递到后台监控中
+> 自从 `React 16` 起, 任何未被错误边界捕获的错误将会导致整个 `React` 组件树被卸载, 所以错误捕获很重要, 对于无论是监控或者保证整个应用的体验性都必须加, 对于添加错误捕获的时机以及粒度需要根据实际的应用而定, 也并不是说粒度越小越好
+> 限制
+
+- 只能够捕获包裹在内组件渲染错误
+- 不能够捕获自身的错误 以及事件处理器内的错误, 可以在事件处理器内使用 `try catch` 处理
+- 不能捕获类似于 `Promise` 执行的错误 `setTimeout` 或者 `requestAnimationFrame` 的 `callbacks`
+- 服务端渲染错误也无法捕获
+- 在使用 `getDerivedStateFromError` 时不能在内部调用 this 因为是静态方法(其实这也是一个经常会面试的点 构造函数中的静态方法 是不会被继承的)
+  那么针对事件处理器中的错误无法捕获, 只能是使用 try catch 对执行代码逻辑的部分进行捕获
+
+```tsx
+class ErrorBoundary extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      /** 初始化没有错误 */
+      hasError: false,
+    };
+  }
+
+  getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    if (typeof this.props.logError === 'function') {
+      this.props.logError(errorInfo);
+    }
+
+    this.setState({
+      hasError: true,
+    });
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return this.props.errorNode || <h3>渲染出错了, 请进行修复!</h3>;
+    }
+
+    return this.props.children;
+  }
+}
+```
+
+> 以上代码中无论是在 `getDerivedStateFromError` 或者在 `componendDidCatch` 中任意一个都可以进行错误处理,
+> 使用错误捕获的时机可自定义, 并不是粒度越小就越好, 当然也可以使用高阶函数处理
+
+```tsx
+const errorCatch = (Target) => {
+  return class ErrorWrapper extends React.Component {
+    render() {
+      return (
+        <ErrorBoundary>
+          <Target {...this.props} />
+        </ErrorBoundary>
+      );
+    }
+  };
+};
+
+// 使用时 Demo
+export default errorCatch(Demo);
+```
+
+### 参考
+
+- [Understanding Error Boundaries in React](https://blog.bitsrc.io/understanding-error-boundaries-in-react-e58f15ae1f38)
+- [Error Boundaries](https://reactjs.org/docs/error-boundaries.html)
+- [在线参考示例](https://codepen.io/gaearon/pen/wqvxGa?editors=0010)
+- [Component error handling in React using Error Boundaries](https://blog.pusher.com/react-error-boundaries/)

@@ -1,0 +1,32 @@
+---
+id: HandlerBind
+slug: /HandlerBind
+title: 事件绑定
+sidebar_label: 事件绑定
+---
+
+## 简介
+
+> 接上文中的 `onClick` 事件 处理方法, 当在处理函数中需要使用到 `this` 时, 需要将 `this`指向问题解决掉, 否则会无法达到预期, 那么事件绑定有几种方法, 以及各个方法的优缺点是什么
+
+### 事件中绑定
+
+```tsx live
+class Demo extends React.Component {
+  state = {
+    date: Date.now(),
+  };
+  click() {
+    this.setState({ date: Date.now() });
+  }
+
+  render() {
+    return (
+      <div>
+        <span>当前时间: {this.state.date.toLocaleString()}</span>
+        <button onClick={this.click.bind(this)}>点我</button>
+      </div>
+    );
+  }
+}
+```

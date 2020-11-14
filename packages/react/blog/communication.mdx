@@ -1,0 +1,107 @@
+---
+slug: communication
+title: 组件通信
+author: 聂晓飞
+author_title: 流浪者
+author_url: https://github.com/niexiaofei1988
+description: React 组件通信的几种方式
+---
+
+> 在使用组件时一定会涉及到通信, 那么父子组件, 父孙组件以及更多的嵌套组件混合使用时有哪几种常见的通信方式以及注意事项 ?
+
+<!--truncate-->
+
+> 每一个组件都是完全独立的, 有包含内部的状态 和 接收来自父组件的数据, 组件之间的通信使用最多的就是将数据存放在父组件中, 然后传递到需要使用的子组件
+> 有几种常见的通信场景, 父子通信, 隔代通信, 无嵌套关系之间的通信
+
+### 父子通信
+
+> 父子通信也是最为常见的通信方式, 是通过 `props`将数据传递给子组件, 可以通过 给子组件添加`ref`的方式来调用子组件中的方法
+
+```tsx
+class Parent extends React.Component {
+  contructor() {
+    super();
+    this.childRef = React.createRef();
+    this.changeChildValue = this.changeChildValue.bind(this);
+  }
+
+  changeChildValue() {
+    console.log(this.childRef.current);
+    this.childRef.current.changeValue('我是在父组件中触发子组件中的事件');
+  }
+
+  render() {
+    return (
+      <div>
+        <button onClick={this.changeChildValue}>点击触发修改子组件中的值</button>
+        <Child ref={this.childRef} />
+      </div>
+    );
+  }
+}
+
+/** 通过调用子组件中的方法使用回调的方式将数据传递且修改子组件中的数据 */
+class Child extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      msg: '我是子组件的值',
+    };
+  }
+
+  changeValue(message) {
+    this.setState({
+      msg: message,
+    });
+  }
+
+  render() {
+    return <span>{this.state.msg}</span>;
+  }
+}
+```
+
+> 那么兄弟组件也是同样的道理, 可以将数据共同放在同一个父组件中进行管理, 然后通过操作父子组件通信的方法进行兄弟之间的通信
+
+### 兄弟通信
+
+> 假设有两个组件 `A` 和 `B` 有同一个父组件 `Parent`, 兄弟之间要相互操作之间的数据
+
+```tsx
+class Parent extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      msgA: 'A组件',
+      masgB: 'B组件',
+    };
+  }
+
+  render() {
+    return (
+      <div>
+        <ChildA />
+        <ChildB />
+      </div>
+    );
+  }
+}
+```
+
+### 隔代通信
+
+### 完整示例
+
+import RIframe from '@site/src/components/RIframe';
+
+<RIframe
+  allow="fullscreen"
+  src="https://codepen.io/niexiaofei/embed/abvMmdE"
+  onLoaded={() => {
+    console.log('onLoaded>>>>>>>>>>>');
+  }}
+  onError={() => {
+    console.log('onerror>>>>>>>>>>>>>.');
+  }}
+/>

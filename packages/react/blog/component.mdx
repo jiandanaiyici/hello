@@ -1,0 +1,96 @@
+---
+slug: component
+title: 创建组件形式
+author: 聂晓飞
+author_title: 流浪者
+author_url: https://github.com/niexiaofei1988
+# author_image_url: ../static/img/avatar.jpeg
+description: React 组件形式
+# image: ../static/img/avatar.jpeg
+---
+
+> 本文中全部使用 `tsx` 文件形式进行展示, 一方面是为了强化使用 `ts` 进行开发, 目前可分为两大类, 一种是 `class` 组件, 一种分为 `Function`组件
+
+<!--truncate-->
+
+### class 组件
+
+> 而对于创建 `class` 组件的方式, 也是分为两种不同的方式, 分别是直接继承 `Component` 和 继承 `PureComponent`形式, 本质上在编写时是没有区别的, 可以看下如下代码.
+> 而对于这两种不同的继承方式有什么区别, 稍后再说, 可参考下[PureComponent](https://reactjs.org/docs/react-api.html#reactpurecomponent)
+
+```tsx
+interface DemoProps {
+  children: ReactNode;
+}
+
+interface DemoState {
+  visible: boolean;
+}
+
+/** Component */
+class Demo extends React.Component<DemoProps, DemoState> {
+  constructor(props: DemoProps) {
+    super(props);
+    this.state = {
+      visible: false,
+    };
+  }
+
+  render() {
+    return <div>{this.props.children}</div>;
+  }
+}
+
+/** PureComponent */
+class Demo extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      visible: false,
+    };
+  }
+
+  render() {
+    return <div>{this.props.children}</div>;
+  }
+}
+```
+
+> 从以上代码中可以清晰的得出, 在创建组件写法上没有什么区别, 然后这里其实还是牵扯到了具体的类型定义, [可参考 @types/react/test/tsx.tsx](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/f0841a3126737ab117add60b2011d7a7c10022eb/types/react/test/tsx.tsx) 文件其他的一些定义方式
+
+### Function
+
+> 那么函数式组件呢, 刚开始都被理解为是无状态([`Stateless`](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/f0841a3126737ab117add60b2011d7a7c10022eb/types/react/index.d.ts#L542)) 组件, 但在 `React V16.8` 以后针对 函数式组件增加了状态管理机制, 就是 [`Hooks`](https://reactjs.org/docs/hooks-intro.html),
+> 使得函数式组件不再只能作为无状态组件形式出现. 如下代码 改造 `Class` 组件, 针对类型定义有简写方式, 比如:
+> [`FC === FunctionComponent`](https://github.com/DefinitelyTyped/DefinitelyTyped/blob/f0841a3126737ab117add60b2011d7a7c10022eb/types/react/index.d.ts#L544)
+
+<!-- > [`SFC ===`] -->
+
+```tsx
+/** FC === FunctionComponent */
+const Demo: FC<DemoProps> = (props) => {
+  const [visible, setVisible] = useState<boolean>(false);
+  return <div>{props.children}</div>;
+};
+
+// 等同于 以下写法
+const Demo: FunctionComponent<DemoProps> = (props) => {};
+
+/** 而针对 PureComponent 的写法, 函数式写法也有对应的形式 */
+const Demo = React.memo((props: DemoProps) => {
+  const [visible, setVisible] = useState<boolean>(false);
+  return <div>{props.children}</div>;
+});
+```
+
+> 这样看起来是不是更加的简洁呢, 无论是使用哪种方式创建组件, 在平时的开发过程中都不会有这么严格的要求, 但依旧还是要保持自己定义类型的规范
+
+---
+
+通过上边的代码示例中, 看做了有两种不一样的定义方法, 一种是 PureComponent 和 React.memo, 这两者其实可以理解为是 `class` 和 `Function`的对应定义关系, 都是为了优化心性能存在的
+需要注意的是在使用时需要小心, 明确的知道区别之后再选择是否需要使用, 性能优化是好事, 但要确保不会出现意想不到的 `Bug`
+
+可参考
+
+- [PureComponent VS Component](https://stackoverflow.com/questions/41340697/react-component-vs-react-purecomponent): `Class` 组件创建时使用不同的类继承之间的区别
+- [React.memo](https://stackoverflow.com/questions/41340697/react-component-vs-react-purecomponent)
