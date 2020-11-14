@@ -9,16 +9,13 @@
 
 # production
 /dist
-/build
 /docs-dist
 
 # misc
 .DS_Store
 
 # umi
-/src/.umi
-/src/.umi-production
-/src/.umi-test
-/.env.local
-
-# vue
+.umi
+.umi-production
+.umi-test
+.env.local

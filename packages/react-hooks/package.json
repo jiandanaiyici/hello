@@ -1,6 +1,6 @@
 {
-  "private": true,
   "name": "@hello/hooks",
+  "version": "0.0.1",
   "scripts": {
     "start": "umi dev",
     "build": "umi build",
@@ -22,6 +22,9 @@
     "*.ts?(x)": [
       "prettier --parser=typescript --write"
     ]
+  },
+  "directories": {
+    "lib": "lib"
   },
   "dependencies": {
     "@ant-design/pro-layout": "^5.0.12",
