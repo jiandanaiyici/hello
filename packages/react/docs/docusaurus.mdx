@@ -1,0 +1,24 @@
+---
+id: docusaurus
+title: docusaurus 使用
+sidebar_label: docusaurus
+---
+
+## 自定义组件
+
+`src/components` 下定义自定义组件, 在 `mdx`文件中引用
+
+```md
+import Highlight from '@site/src/components/Highlight';
+
+<Highlight color="#25c2a0">Docusaurus green</Highlight>
+<Highlight color="#1877F2">
+</Highlight>
+are my favorite colors.
+```
+
+import Highlight from '@site/src/components/Highlight';
+
+<Highlight color="#25c2a0">Docusaurus green</Highlight>
+<br />
+<Highlight color="#1877F2">Facebook blue</Highlight>

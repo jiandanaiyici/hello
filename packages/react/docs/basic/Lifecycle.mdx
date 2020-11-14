@@ -1,0 +1,70 @@
+---
+id: Lifecycle
+title: 生命周期
+sidebar_label: 生命周期
+---
+
+### 简介
+
+根据官方定义的组件形式来看, 通过 `class` 创建组件都会经历特定的生命周期, 这也是核心之一, 很有必要通过对其了解及有更深一层的自己的理解才能够更好的把控得住整个框架的设计
+
+### 准备
+
+> 按照官方示例中所示, 如果需要创建一个包含有定时器`timer`的 `Clock`组件,那么首先分析一下组件的功能以及思考如何实现, 在哪个生命周期干什么事情
+
+- 初始化数据`date`
+- 定义定时器`timer`
+- 对定时器进行赋值并且运行定时器
+- 组件销毁时清空定时器`clearInterval`
+- 渲染到`UI`层
+
+```tsx live
+class Clock extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      date: new Date(),
+    };
+    this.timer = null;
+  }
+
+  componentDidMount() {
+    this.timer = setInterval(() => {
+      this.tick();
+    }, 1000);
+  }
+
+  /** 定时器执行函数 */
+  tick() {
+    this.setState({ date: new Date() });
+  }
+
+  /** 组件销毁时清空定时器 */
+  componentWillUnmount() {
+    if (this.timer) {
+      this.timer = null;
+      clearInterval(this.timer);
+    }
+  }
+
+  render() {
+    return <span>当前时间是: {this.state.date.toLocaleString()}</span>;
+  }
+}
+```
+
+> 虽然看着以上代码比较简单, 执行也没有任何问题, 但我们需要了解的就是执行顺序
+
+- [`contructor`](https://reactjs.org/docs/react-component.html#constructor): 这里指的是在组件创建时所初始化的一些数据, 比如这里的 `date`
+- [`render`](https://reactjs.org/docs/react-component.html#render): 类组件中必须要要包含的一个方法, 返回一个 `jsx` 元素, 也就是我们理解的 `React` 节点, 它会将接受到的 `props` 和 内部状态`state`渲染到我们已经编写好的`UI`上, 这里指的就是实时展示的当前时间
+- [`componentDidMount`](https://reactjs.org/docs/react-component.html#componentdidmount): 首先我们知道`React`其实是模拟类似浏览器中的`DOM`树将我们开发的 `UI` 层 和 `data` 数据层结合后编译成了一个[Virtual DOM](https://reactjs.org/docs/faq-internals.html#gatsby-focus-wrapper)虚拟的`DOM`树, 也就是`JS`对象, 那么最终需要渲染到页面中时要将整个`虚拟DOM`树挂载到真实的节点上才能够展示出来, 此生命周期就是在完全挂载后执行的, 可以在此处调用真是`DOM`中的方法, 但一般不是很建议直接操作`DOM`
+- [`componentWillUnmount`](https://reactjs.org/docs/react-component.html#componentwillunmount): 称为是卸载阶段, 在组件被销毁时调用, 这里需要将定义的定时器清空, 后续还会有更多的使用场景
+
+> 另外在此之前还有另一个生命周期[componentWillMount](https://reactjs.org/docs/react-component.html#unsafe_componentwillmount), 在挂载到真实`DOM`元素之前调用, 不过已经被废弃了
+
+### 参考
+
+- [super](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/super): 在继承的子类中使用 `this` 前调用
+- [constructor](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes/constructor): 类定义中初始化数据的一种特殊方法
+- [class](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes): 新引入的一种定义`类`的语法
+- [extends](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Classes/extends): 类声明或类表达式中实现继承的关键字

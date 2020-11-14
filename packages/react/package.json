@@ -1,0 +1,43 @@
+{
+  "name": "hello-react",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "docusaurus": "docusaurus",
+    "start": "docusaurus start --port 8000",
+    "build": "docusaurus build",
+    "surge": "npm run build && surge build react-record.surge.sh",
+    "surge-examples": "cd examples && npm run deploy:surge",
+    "swizzle": "docusaurus swizzle",
+    "deploy": "docusaurus deploy",
+    "serve": "docusaurus serve"
+  },
+  "dependencies": {
+    "@ant-design/icons": "^4.2.2",
+    "@docusaurus/core": "^2.0.0-alpha.61",
+    "@docusaurus/preset-classic": "^2.0.0-alpha.61",
+    "@docusaurus/theme-live-codeblock": "^2.0.0-alpha.39",
+    "@mdx-js/react": "^1.5.8",
+    "ahooks": "^2.5.0",
+    "clsx": "^1.1.1",
+    "react": "^16.8.4",
+    "react-dom": "^16.8.4",
+    "react-iframe": "^1.8.0"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@docusaurus/module-type-aliases": "^2.0.0-alpha.51",
+    "typescript": "^3.9.7"
+  }
+}

@@ -1,0 +1,177 @@
+---
+id: data
+slug: /data
+title: 数据管理
+sidebar_label: 数据管理
+---
+
+### 简介
+
+> 在 `React` 中有多种传递数据及控制数据的形式,
+
+- `state: `表示的是组件内部维护的状态管理
+- `props: ` 接收来自父组件的数据, 属自上而下单向数据流, 不要手动直接修改 `props`的值
+- `context: ` 在组件嵌套层级比较多同时还需要控制整个应用的一些统一配置比如: 主题配置等那么可以使用
+- `redux: ` 全局作用的数据管理机制, 但在使用前需要考虑好是否真的需要使用
+
+### State
+
+> 指的是组件内部维护的状态, 可以理解为是一个状态机, 在状态(`state`)发生变化后, 调用 `render` 方法重新渲染组件将数据的变化反应到`UI`的变化, 做一个小`Demo` 演示下
+
+- 定义初始化数据
+- 绑定点击事件对初始化数据(字符串)进行逆转
+
+```tsx live
+class StateDemo extends React.Component {
+  state = {
+    name: 'Hello',
+  };
+
+  constructor() {
+    super();
+    this.reverse = this.reverse.bind(this);
+  }
+
+  reverse() {
+    this.setState((prevState) => ({
+      name: prevState.name.split('').reverse().join(''),
+    }));
+  }
+
+  render() {
+    console.log(this.state.name, '>>>>>>');
+    return <button onClick={this.reverse}>{this.state.name}</button>;
+  }
+}
+```
+
+> 通过以上示例展示效果可以看出已经成功了, 看似简单的一个小功能, 其实这里隐藏了很多的知识点,有些不是这里重点, 略过
+> 虽然通过初始化之后的 `state` 是一个对象, 但只能通过 `this.setState` 的方法进行赋值时才会重新渲染到`UI`上, 主要是因为 `this.setState` 是会将一批进行修改的数据进行合并, 在合并过之后得到新的值进行渲染, 有几个需要注意的点
+
+- 不能直接使用 `this.state.name`的方式进行赋值, 虽然在 `render`中打印之后看到已经修改过的值, 但并不会触发重新渲染
+- `setState` 可能是异步的,会将值进行合并之后再进行渲染, 如果是使用 `this.setState({ name: this.state.name.split('').reverse().join('') })`的形式重新设置值时, 可能会和预期的效果不一致, 可以使用箭头函数的形式解决, 如示例中所示
+
+### Props
+
+> 通过父组件将数据传递给子组件以更新子组件中 `UI`的变化,也是一种最基础的父子组件之间的通信方式,
+> 需要注意的是 `props` 被定义为从上向下传递的单向数据流, 通常情况下不要对 `props`进行直接修改,
+> 可能会导致一些意料之外的问题出现排查起来也很难排查出来, 组件无论是通过什么方式定义的(函数声明 或 class),
+> 都绝不能修改自身的 `props`值, 只读就像是定义的一样, `所有React组件都必须像纯函数一样保护他们的props 不被修改`
+
+`Child.tsx`
+
+```tsx title=""
+class Child extends React.Component {
+  render() {
+    return <span>{this.props.msg}</span>;
+  }
+}
+```
+
+`Parent.tsx`
+
+```tsx
+class Parent extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      msg: 'this is from parent',
+    };
+  }
+  render() {
+    return <Child msg={this.state.msg} />;
+  }
+}
+```
+
+> 此时显示出来的应该是接收到福组件的值
+
+### context
+
+> 虽然提供了一个数据共享的方法, 但是在使用前考虑下是否真的需要此方法, 如果使用不好有一定的弊端,如性能消耗等, 假设这里是主题的控制
+
+`context.tsx`
+
+```tsx
+const AppContext = createContext('light'); // 默认 light 主题
+
+export default AppContext;
+```
+
+`示例: App.tsx`
+
+```tsx
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      theme: 'light',
+    };
+    this.switchTheme = this.switchTheme.bind(this);
+  }
+  switchTheme() {
+    this.setState((prevState) => ({
+      theme: prevState.theme === 'light' ? 'dark' : 'light',
+    }));
+  }
+
+  render() {
+    return (
+      <AppContext.Provider value={{ theme: this.state.theme }}>
+        <button onClick={this.switchTheme}>点击切换</button>
+        {/** 这里是一些需要数据共享的子组件 */}
+      </AppContext.Provider>
+    );
+  }
+}
+```
+
+`如何使用: Child.tsx`
+
+```tsx
+class Child extends React.Component {
+  render() {
+    return (
+      <AppContext.Consumer>
+        {(value) => {
+          // 这里可以查看主题的值
+        }}
+      </AppContext.Consumer>
+    );
+  }
+}
+```
+
+> 上方代码已经可以实现了多层级嵌套组件的数据共享, [详细实例参考](https://reactjs.org/docs/context.html#examples)
+> 通过 `createContxt` 方法创建一个数据共享的对象, 其中对象包含 `Provider`(称为数据提供者) 和
+> `Consumer`(消费者) 在需要使用的地方使用, 有几点是需要注意的
+
+- 每次 `value`变化时所有使用到的组件都会进行重新渲染, 因为每次的 `value` 都会是一个新的对象
+- 只有当 `value` 为 `undefined` 时 默认值才会生效
+- 当使用 `class` 定义组件时, 可以通过 `contextType` 来访问到最近的 `context` 对象, 可以在任何生命周期内访问, 如下
+
+```tsx
+class Demo extends React.Component {
+  componentDidMount() {
+    let value = this.context;
+  }
+
+  componentDidUpdate() {
+    let value = this.context;
+  }
+
+  componentWillUnmount() {
+    let value = this.context;
+  }
+
+  render() {
+    let value = this.context;
+  }
+}
+```
+
+<!-- ## 其他参考
+
+- State: 组件内部的状态管理机制以及注意事项
+- [Props](): 接收来自父组件的数据, 且数据流是单向的,不要直接修改 `this.props` 的, 避免一些不必要的问题
+- [Hanlder bind]() -->

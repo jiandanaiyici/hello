@@ -1,0 +1,50 @@
+---
+id: useState
+title: useState
+sidebar_label: useState
+---
+
+### 示例
+
+> 回顾以前定义包含自身状态的组件只能够使用 `class` 的方式来定义, 有些复杂, 先看下以前定义一个简单的自身状态的组件是如何定义的. 这里只是一个简单的演示
+> 一个包含了 `name` 和修改 `name`的 demo
+
+```tsx live
+class Demo extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      name: 'hello react',
+    };
+    this.changeInputValue = this.changeInputValue.bind(this);
+  }
+
+  changeInputValue(e) {
+    this.setState({
+      name: e.target.value,
+    });
+  }
+
+  render() {
+    return <input value={this.state.name} onChange={this.changeInputValue} />;
+  }
+}
+```
+
+> 以下是使用 `useState` 重构后的代码
+
+```tsx live
+function Demo() {
+  const [name, setName] = React.useState('hello react');
+
+  const changeInputValue = React.useCallback((e) => {
+    setName(e.target.value);
+  }, []);
+
+  return <input value={name} onChange={changeInputValue} />;
+}
+```
+
+> 然后看下两种方式都可以实现, 那么有什么不同呢 ? 很直观的看 代码量减少, 更加的清晰
+
+### 分析

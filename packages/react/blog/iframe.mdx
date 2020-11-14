@@ -1,0 +1,55 @@
+---
+slug: iframe
+title: React 加载 iframe
+author: 聂晓飞
+author_title: 流浪者
+author_url: https://github.com/niexiaofei1988
+description: React 中如何加载 iframe
+---
+
+### 背景
+
+> 至于为什么想要研究一下这个 `iframe`到底应该怎么样引入, 是因为在总结一些关于 `React` 的记录时,发现使用的静态网站生成器所支持的插件引入无法满足一些需求
+> 是关于在写示例代码时, 并不能完整的将整个示例都展示出来,不能展示结果. 所以需要引入 `iframe` 搜索过后发现没有比较好的包可以使用, 所以就尝试着参考别人的一些
+> 研究成果之上进行探索以及从新掌握一下那些遗失的知识啊, 所谓是学而不思则罔, 思而不学则殆...
+
+<!--truncate-->
+
+### 需求
+
+- [x] 直接引入 `iframe` 加载地址之后进行展示
+- [x] 支持全屏(为了能够以更宽阔的视野查看整个加载页面)操作 及其他的一些操作
+- [ ] 动态加载 `HTML` 及后台返回的一些数据进行直接渲染(基本上都是一些`HTML` 字符串). 常规情况下可能都是使用 [`dangerouslySetInnerHTML`](https://reactjs.org/docs/dom-elements.html#dangerouslysetinnerhtml)
+      但无论是官方还是社区内都不建议使用这种方式
+- [ ] 加载之前渲染的 `loading` 以及自定义占位
+
+### API
+
+| 属性          | 说明               | 类型             | 默认值           |
+| ------------- | ------------------ | ---------------- | ---------------- |
+| `showToolbar` | 是否展示工具栏     | `boolean`        | `true`           |
+| `actions`     | 当展示工具栏时生效 | 目前只有全屏操作 | 目前只有全屏操作 |
+| `onLoaded`    | `iframe`加载完成   | `() => void`     | -                |
+| `onError`     | `iframe`加载失败   | `() => void`     | -                |
+
+### 完整示例
+
+import RIframe from '@site/src/components/RIframe';
+
+<RIframe allow="fullscreen" src="https://a.singlediv.com/" title="一个 div 画个啥 ?" />
+
+### 参考
+
+- [HTML iframe 标签](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/iframe)
+- [HTMLIFrameElement](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLIFrameElement)
+- [react-iframe](https://github.com/svenanders/react-iframe)
+- [react-frame-component](https://github.com/ryanseddon/react-frame-component)
+- [zoid](https://github.com/krakenjs/zoid)
+- [useEvent](https://github.com/streamich/react-use/blob/master/src/useEvent.ts): 监听使用 event
+- [All articles It's time to lazy-load offscreen iframes!](https://web.dev/iframe-lazy-loading/)
+- [useFullscreen](https://ahooks.js.org/hooks/dom/use-fullscreen)
+- [screenfull](https://sindresorhus.com/screenfull.js/)
+
+<!-- https://codesandbox.io/s/riframe-2ry2g -->
+<!-- https://codepen.io/dissimulate/pen/vlfyA -->
+<!-- https://shici.store/huajianji/ -->
