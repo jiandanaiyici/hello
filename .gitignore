@@ -21,7 +21,7 @@ lerna-debug.log*
 /build
 /docs-dist
 .nuxt
-.vuepress/dist
+.vuepress/
 .next
 
 # misc

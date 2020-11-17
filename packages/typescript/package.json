@@ -1,0 +1,15 @@
+{
+  "name": "typescript",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "docs:dev": "vuepress dev docs",
+    "docs:build": "vuepress build docs",
+    "surge": "npm run docs:build && surge docs/.vuepress/dist --domain hello-typescript.surge.sh"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "2.1.2",
+    "vuepress": "^1.7.1"
+  }
+}
