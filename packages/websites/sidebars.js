@@ -1,3 +1,3 @@
 module.exports = {
-  docs: ['images'],
+  docs: ['images', 'utils', 'interesting', 'operation', 'frontend', 'resume'],
 };
