@@ -66,8 +66,8 @@ module.exports = {
           showLastUpdateAuthor: true,
           showLastUpdateTime: true,
           sidebarPath: require.resolve('./sidebars.js'),
-          // editUrl:
-          //   'https://github.com/niexiaofei1988/hello-react',
+          editUrl:
+            'https://github.com/niexiaofei1988/hello/tree/main/packages/react',
         },
         blog: {
           blogDescription: 'A docusaurus powered blog!',

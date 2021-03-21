@@ -6,7 +6,7 @@
     "docusaurus": "docusaurus",
     "start": "docusaurus start --port 8000",
     "build": "docusaurus build",
-    "surge": "npm run build && surge build react-record.surge.sh",
+    "surge": "npm run build && surge build --domain react-record.surge.sh",
     "surge-examples": "cd examples && npm run deploy:surge",
     "swizzle": "docusaurus swizzle",
     "deploy": "docusaurus deploy",
