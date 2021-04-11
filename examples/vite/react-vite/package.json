@@ -1,0 +1,25 @@
+{
+  "name": "react-vite",
+  "version": "0.0.0",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build"
+  },
+  "dependencies": {
+    "@pika/react": "^16.13.1",
+    "@pika/react-dom": "^16.13.1",
+    "ahooks": "^2.3.0",
+    "antd": "^4.5.1",
+    "react-router-dom": "^5.2.0",
+    "typescript": "^4.0.0-beta"
+  },
+  "devDependencies": {
+    "@types/react": "^16.9.43",
+    "@types/react-dom": "^16.9.8",
+    "@types/react-router-dom": "^5.1.5",
+    "less": "^3.12.2",
+    "mockjs": "^1.1.0",
+    "vite": "^1.0.0-rc.1",
+    "vite-plugin-react": "^3.0.0"
+  }
+}

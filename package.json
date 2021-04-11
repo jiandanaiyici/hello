@@ -6,6 +6,7 @@
     "start:webpack": "cd packages/webpack && npm run start",
     "start:electron": "cd packages/electron && npm run start",
     "start:node": "cd pacakges/node && npm run start",
+    "start:vue": "cd packages/vue && npm run start",
     "start:react": "cd packages/react && npm run start",
     "start:typescript": "cd packages/typescript && npm run start",
     "start:website": "cd packages/website && npm run start",
@@ -16,7 +17,8 @@
     "surge:react": "cd packages/react && npm run surge",
     "surge:typescript": "cd packages/typescript && npm run surge",
     "surge:website": "cd packages/website && npm run surge",
-    "surge:interview": "cd packages/interview && npm run surge"
+    "surge:interview": "cd packages/interview && npm run surge",
+    "surge:vue": "cd packages/vue && npm run surge"
   },
   "devDependencies": {
     "lerna": "^3.22.1",
