@@ -1,0 +1,63 @@
+{
+  "name": "hello-js",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "next",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc"
+  },
+  "dependencies": {
+    "@mapbox/rehype-prism": "^0.5.0",
+    "@mdx-js/loader": "^1.6.16",
+    "@next/mdx": "^9.5.2",
+    "@types/uuid": "^8.3.0",
+    "@zeit/next-less": "^1.0.1",
+    "classnames": "2.2.6",
+    "date-fns": "2.10.0",
+    "next": "^9.5.3",
+    "null-loader": "^4.0.0",
+    "postcss-custom-properties": "^9.1.1",
+    "postcss-import": "^12.0.1",
+    "prism-react-renderer": "^1.1.1",
+    "react": "^16.13.1",
+    "react-dom": "^16.13.1",
+    "react-markdown": "^4.3.1",
+    "rehype": "^11.0.0",
+    "rehype-format": "^3.1.0",
+    "rehype-highlight": "^4.0.0",
+    "remark": "11.0.2",
+    "typescript": "^3.9.2"
+  },
+  "devDependencies": {
+    "@types/classnames": "^2.2.10",
+    "@types/jest": "^25.2.2",
+    "@types/node": "^14.0.1",
+    "@types/react": "^16.9.35",
+    "@types/react-dom": "^16.9.8",
+    "gray-matter": "^4.0.2",
+    "postcss-preset-env": "^6.7.0",
+    "remark-highlight.js": "^6.0.0",
+    "remark-html": "^12.0.0",
+    "remark-parse": "^8.0.3",
+    "tailwindcss": "^1.4.0",
+    "unified": "^9.2.0",
+    "uuid": "^8.3.0"
+  },
+  "description": "- [using-mdx-with-nextjs](https://whoisryosuke.com/blog/2020/using-mdx-with-nextjs/)",
+  "main": "next.config.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/niexiaofei1988/hello-Js.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/niexiaofei1988/hello-Js/issues"
+  },
+  "homepage": "https://github.com/niexiaofei1988/hello-Js#readme"
+}

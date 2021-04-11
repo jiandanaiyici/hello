@@ -1,0 +1,45 @@
+---
+title: 如何使用 NextJs 搭建自己的博客
+excerpt: ''
+# coverImage: ''
+author:
+  name:
+  picture:
+ogImage:
+  url: '/assets/blog/dynamic-routing/cover.jpg'
+---
+
+### 备注记录
+
+- [x] 首先按照以上文档创建好了基于 NextJs 搭建的 Typescript 环境之后
+- [x] 安装 antd
+- [x] 此处未找到解决方法(按照官网说法是现在已经自动支持动态加载不需要手动配置), 暂时使用基于 V3.x 的办法引入动态加载
+- [x] 配置 .babelrc 文件, 将 postcss.config.js 文件中的 plugins 注释掉
+
+```bash
+yarn add antd babel-plugin-import less @zeit/next-less less-vars-to-js null-loader
+```
+
+`.babelrc`
+
+```json
+{
+  "presets": ["next/babel"],
+  "plugins": [
+    [
+      "import",
+      {
+        "libraryName": "antd",
+        "style": true
+      }
+    ]
+  ]
+}
+```
+
+### 参考
+
+- [brevifolia-next-tinacms](https://github.com/kendallstrautman/brevifolia-next-tinacms): 一个基于 NextJs 配置的文档
+- [simple-markdown-blog-nextjs](https://tinacms.org/blog/simple-markdown-blog-nextjs/): 简单搭建 NextJs 文档博客
+- [x] [with-ant-design-less](https://github.com/vercel/next.js/tree/canary/examples/with-ant-design-less): 结合 antd 使用
+<!-- https://www.cnblogs.com/1wen/p/10793868.html -->

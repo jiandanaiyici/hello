@@ -1,4 +1,4 @@
-# Hello
+# Hello 系列
 
 - [Hello TypeScript](https://hello-typescript.surge.sh/)
 - [Hello Node](https://hello-node.surge.sh/)
@@ -8,3 +8,5 @@
 - [Hello Electron](https://nz-electron.surge.sh)
 - [Hello Interview](https://hello-interview.surge.sh)
 - [Hello Chart](https://hello-chart.surge.sh)
+- [Hello Javascript](https://hello-js-yy.vercel.app/): 缺少 `package.json` 中配置部署方式
+- [Hello CSS](https://hello-css.surge.sh/)

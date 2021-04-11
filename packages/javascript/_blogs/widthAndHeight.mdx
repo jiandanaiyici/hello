@@ -1,0 +1,40 @@
+---
+title: '高度宽度值多少?'
+excerpt: ''
+# coverImage: ''
+date: '2020-03-16T05:35:07.322Z'
+author:
+  name:
+  picture:
+ogImage:
+  url: '/assets/blog/dynamic-routing/cover.jpg'
+---
+
+> 首先先看两张图 [来源](https://developer.mozilla.org/zh-CN/docs/Web/API/CSS_Object_Model/Determining_the_dimensions_of_elements)
+
+第一张是获取整个容器的外部高度和宽度
+
+![](https://media.prod.mdn.mozit.cloud/attachments/2012/07/09/347/837020ef37f0d2a3f5aef059459d574b/Dimensions-offset.png)
+
+- [offsetHeight](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/offsetHeight) 和 [offsetWidth](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLElement/offsetWidth): 两者都是只读属性, 表示元素最外层的宽度和高度, 假设内部包含了滚动条也会计算在内, 需要注意的是这两个值返回的都是四舍五入的整数
+
+  `offsetHeight = clientHeight + paddingTop + paddingBottom + borderTop + borderBottom`
+
+  `offsetWidth = clientWidth + paddingRight + paddingLeft + borderLeft + borderRight`
+
+<hr />
+
+第二张是获取容器的纯内容区域高度和宽度(去除了 `margin` `padding` 和 滚动条的宽度 和 高度)
+
+<img src="https://media.prod.mdn.mozit.cloud/attachments/2012/07/09/346/e376ef78f757870d6d5327498c745681/Dimensions-client.png" />
+
+> 而对于 [clientHeight](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/clientHeight) 和 [clientWidth](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/clientWidth) 指的就是内容区域的高度, 只包含有 `height` 和 `padding`的值, 不包含 `border` 和 `margin`的值, 同样的返回也是四舍五入的整数
+
+`clientHeight = height + padding-top + padding-bottom - (垂直滚动条高度, 当然如果存在的话)`
+
+<hr />
+
+以上两种都是属于四舍五入的值, 可以通过 [getBoundingClientRect](https://developer.mozilla.org/zh-CN/docs/Web/API/Element/getBoundingClientRect)获取到小数的值, 包含有针对视窗的位置
+
+- [](https://www.cnblogs.com/mengshenshenchu/p/6666300.html)
+- [](https://blog.csdn.net/gs6511/article/details/53900761)

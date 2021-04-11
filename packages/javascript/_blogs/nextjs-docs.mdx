@@ -1,0 +1,26 @@
+---
+title: NextJs 那些需要关注的事儿
+excerpt: ''
+# coverImage: ''
+author:
+  name:
+  picture:
+ogImage:
+  url: '/assets/blog/dynamic-routing/cover.jpg'
+---
+
+### Pages
+
+> 根据文档中描述, 以约定式的路由进行渲染, 比如在 `pages` 目录下创建 `about.jsx` 或者 `about.tsx`文件之后, 那么访问路径就会变成 `/about`,
+> 依次类推, 比如想要打造一个属于自己的文档系统, 创建一个 `docs`的目录(为什么是目录而不是 `docs.tsx`呢, 是因为文档的话希望每一个文档都是一个独立的模块)
+> 在目录文件夹下创建一个 `index.tsx`文件, 创建 `[slug.tsx]`文件, 最后的目录结构是这样的
+
+```bash
+docs
+├── [slug].tsx
+├── index.tsx
+
+```
+
+> 那么接下来就是和往常一样开始编写自己的代码, 编写之前需要了解的是 `pages` 的预渲染方式, 有两种: 一种是静态生成(Static Generation) 另一种是 服务器端渲染（Server-side Rendering）
+> 不同之处在于生成 `html`文件的时机
