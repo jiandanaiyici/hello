@@ -1,0 +1,49 @@
+.wrapper {
+  // background-color: red;
+  display: inline-flex;
+  align-items: center;
+  padding: 3px;
+  font-size: 12px;
+  border-bottom: 1px red solid;
+
+  .prefix {
+    color: #666;
+  }
+
+  .value {
+    background-color: transparent;
+    min-width: 50px;
+  }
+
+  &.opened {
+    :global {
+      .anticon-down {
+        transform: rotate(180deg) scale(0.8);
+        transition: transform 0.3s linear;
+      }
+    }
+  }
+
+  .icon {
+    position: relative;
+    width: 1em;
+    height: 1em;
+
+    :global {
+      .anticon {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+      }
+    }
+  }
+
+  :global {
+    .anticon-down {
+      transform: scale(0.8);
+      transition: transform 0.3s linear;
+    }
+  }
+}

@@ -1,0 +1,61 @@
+.wrapper {
+  background-color: #fff;
+  padding: 24px;
+
+  .select_wrapper {
+    color: red;
+
+    .select_value {
+      font-weight: 500;
+    }
+  }
+}
+
+.label_content {
+  line-height: 1;
+  padding: 5px;
+  font-size: 12px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  user-select: none;
+
+  .label {
+    background-color: #999;
+  }
+
+  .colon {
+    &::after {
+      content: ':';
+    }
+  }
+
+  .content {
+    flex: 100%;
+  }
+}
+
+.hot_item {
+  cursor: pointer;
+}
+
+.filter_card {
+  .filter_header {
+    padding: 8px;
+    display: flex;
+    align-items: center;
+
+    .filter_value {
+      flex: 100%;
+    }
+
+    .search {
+      width: 200px;
+    }
+  }
+
+  .filter_body {
+    padding: 12px;
+    user-select: none;
+  }
+}

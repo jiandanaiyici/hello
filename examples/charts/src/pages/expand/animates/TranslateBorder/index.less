@@ -1,0 +1,25 @@
+.wrapper {
+  @raidusWidth: 5px;
+  @baseColor: hotpink;
+  border-bottom: 1px @baseColor solid;
+  position: relative;
+
+  .border_wrapper {
+    position: absolute;
+    bottom: 0;
+    top: auto;
+    left: 0;
+    height: 30px;
+    width: 60px;
+    z-index: 10;
+    margin-bottom: -1px;
+    border: 1px @baseColor solid;
+    border-bottom-color: #fff;
+    border-top-left-radius: @raidusWidth;
+    border-top-right-radius: @raidusWidth;
+  }
+
+  .translate_body {
+    padding-top: 40px;
+  }
+}

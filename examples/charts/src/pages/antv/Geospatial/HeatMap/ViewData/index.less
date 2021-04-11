@@ -1,0 +1,41 @@
+.transition {
+  transition: all 3s;
+
+  &.transition-appear,
+  &.transition-enter {
+    opacity: 0;
+  }
+
+  &.transition-appear.transition-appear-active,
+  &.transition-enter.transition-enter-active {
+    opacity: 1;
+  }
+
+  &.transition-leave-active {
+
+    opacity: 0;
+    background: green;
+  }
+}
+.wrapper {
+  display: inline-block;
+  border-right: 5px solid #FFF;
+  position: absolute;
+  top: 0;
+  box-sizing: border-box;
+}
+
+.header {
+  line-height: 1;
+  font-size: 14px;
+  font-weight: 500;
+  color: #f47d31;
+  padding: 12px 8px;
+  border-bottom: 1px #eee dashed;
+}
+
+
+.content {
+  padding: 12px;
+  background-color: red;
+}

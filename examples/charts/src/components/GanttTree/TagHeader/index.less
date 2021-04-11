@@ -1,0 +1,25 @@
+.wrapper {
+  display: flex;
+  align-items: center;
+  .title {
+    font-size: 12px;
+    flex: 0 0 auto;
+    margin-right: 8px;
+
+    .total {
+      color: red;
+      font-weight: 500;
+    }
+  }
+
+  .tag_list {
+    flex: 100%;
+
+    .tag_item {
+      max-width: 160px;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
+    }
+  }
+}

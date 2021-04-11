@@ -7,3 +7,4 @@
 - [Hello Vue](https://hello-vue.surge.sh/)
 - [Hello Electron](https://nz-electron.surge.sh)
 - [Hello Interview](https://hello-interview.surge.sh)
+- [Hello Chart](https://hello-chart.surge.sh)

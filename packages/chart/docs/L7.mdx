@@ -1,0 +1,180 @@
+---
+id: L7-API
+title: L7 API
+sidebar_label: API
+---
+
+## Scene
+
+> 绘制地图的底层组件
+
+### 属性配置
+
+| 属性                    |             描述              |           类型            |
+| ----------------------- | :---------------------------: | :-----------------------: |
+| id                      | 绘图指定的`id` 或者 `DOM`节点 | `string | HTMLDivElement` |
+| map                     |           地图实例            |       `IMapWrapper`       |
+| logoPosition            |           图标位置            |      `PositionName`       |
+| logoVisible             |         是否展示图标          |         `boolean`         |
+| animate                 |         是否开启动画          |         `boolean`         |
+| fitBoundsOptions        |           暂无描述            |         `unknown`         |
+| pickBufferScale         |           暂无描述            |         `number`          |
+| enableMultiPassRenderer |           暂无描述            |         `boolean`         |
+| passes                  |           暂无描述            |  `Array<IPass<unknown>>`  |
+| antialias               |       是否开始前抗锯齿        |         `boolean`         |
+| preserveDrawingBuffer   |      是否保留缓冲区数据       |         `boolean`         |
+
+---
+
+以下为实例化的方法
+
+### 地图图层
+
+| 属性           |           描述           |                 类型                 |
+| -------------- | :----------------------: | :----------------------------------: |
+| getLayers      |    获取所有的地图图层    |           `() => ILayer[]`           |
+| getLayer       | 根据指定`id`获取指定图层 |  `(id: string): ILayer | undefined`  |
+| getLayerByName |   根据图层名称获取图层   | `(name: string): ILayer | undefined` |
+| addLayer       |         添加图层         |       `(layer: ILayer): void`        |
+| removeLayer    |         移除图层         |       `(layer: ILayer): void`        |
+| removeAllLayer |       移除所有图层       |             `() => void`             |
+
+### 标注图层
+
+| 属性              |       描述       |              类型               |
+| ----------------- | :--------------: | :-----------------------------: |
+| addMarker         |     添加标注     |   `(marker: IMarker) => void`   |
+| addMarkerLayer    |   添加标注图层   | `(layer: IMarkerLayer) => void` |
+| removeMarkerLayer | 移除指定标注图层 | `(layer: IMarkerLayer) => void` |
+| removeAllMakers   |   移除所有标注   |          `() => void`           |
+
+### 中心点
+
+| 属性      |              描述              |                 类型                 |
+| --------- | :----------------------------: | :----------------------------------: |
+| getCenter | 获取地图中心点(得到的是经纬度) |           `() => ILngLat`            |
+| setCenter |       设置地图中心点坐标       | `(center: [number, number]) => void` |
+
+### 俯仰度
+
+| 属性     |       描述       |           类型            |
+| -------- | :--------------: | :-----------------------: |
+| getPitch | 获取地图仰俯角度 |      `() => number`       |
+| setPitch | 设置地图仰俯角度 | `(pitch: number) => void` |
+
+### 控件
+
+| 属性             |     描述     |                   类型                   |
+| ---------------- | :----------: | :--------------------------------------: |
+| addControl       | 添加指定控件 |        `(ctr: IControl) => void`         |
+| removeControl    | 移除指定控件 |        `(ctr: IControl) => void`         |
+| getControlByName | 获取指定控件 | `(name: string) => IControl | undefined` |
+
+### 大小
+
+| 属性    |       描述       |          类型           |
+| ------- | :--------------: | :---------------------: |
+| getSize | 获取地图容器大小 | `()=> [number, number]` |
+
+### 缩放
+
+| 属性             |        描述        |                  类型                   |
+| ---------------- | :----------------: | :-------------------------------------: |
+| zoomIn           |      放大一级      |              `() => void`               |
+| zoomOut          |      缩小一级      |              `() => void`               |
+| getZoom          |  获取当前缩放等级  |             `() => number`              |
+| setZoom          |    当前缩放等级    |        `(zoom: number) => void`         |
+| setZoomAndCenter | 设置地图等级和中心 | `(zoom: number, center: Point) => void` |
+| getMinZoom       |  获取最小缩放等级  |             `() => number`              |
+| getMaxZoom       |    最大缩放等级    |             `() => number`              |
+
+### 位移
+
+| 属性  |                  描述                  |           类型           |
+| ----- | :------------------------------------: | :----------------------: |
+| panTo |          地图平移到指定的位置          |   `(p: Point) => void`   |
+| panBy | 以像素为单位沿 X 方向和 Y 方向移动地图 | `(pixel: Point) => void` |
+
+### 事件
+
+| 属性 |     描述     |                            类型                            |
+| ---- | :----------: | :--------------------------------------------------------: |
+| on   |   绑定事件   | `(type: string, handle: (...args: any[]) => void) => void` |
+| off  | 移除指定事件 | `(type: string, handle: (...args: any[]) => void) => void` |
+
+### 其他
+
+| 属性                  |     描述      |             类型             |
+| --------------------- | :-----------: | :--------------------------: |
+| getServiceContainer   | 获取挂载`DOM` |      `() => Container`       |
+| getType               |               |        `() => string`        |
+| getMapContainer       |               |  `() => HTMLElement | null`  |
+| getMapCanvasContainer |               |     `() => HTMLElement`      |
+| getMapService         | 获取地图实例  | `() => IMapService<unknown>` |
+
+### 地图实例
+
+> 初始化地图场景后可以 通过 `getMapService`获取到地图实例, 有以下方法, [更多参考](https://github.com/DefinitelyTyped/DefinitelyTyped/tree/master/types/amap-js-api)
+
+| 属性 | 描述 | 类型 |
+| --- | :-: | :-- |
+| `init` | 地图初始化 | `() => void` |
+| `destroy` | 地图销毁 | `() => void` |
+| `onCameraChanged` | 暂无描述 | `(callback: (viewport: IViewport) => void): void` |
+| `addMarkerContainer` | 暂无描述 | `() => void` |
+| `getMarkerContainer` | 暂无描述 | `(): HTMLElement` |
+| `on` | 绑定地图事件 | `(type: string, handler: (...args: any[]) => void): void` |
+| `off` | 解绑地图事件 | `(type: string, handler: (...args: any[]) => void): void` |
+| `once` | 只绑定一次事件 | `(type: string, handler: (...args: any[]) => void): void` |
+| `getContainer` | 获取容器 | `() => HTMLElement | null` |
+| `getSize` | 获取大小 | `() => [number, number]` |
+| `getMinZoom` | 最小缩放等级 | `() => number` |
+| `getMaxZoom` | 最大缩放等级 | `() => number` |
+| `getType` | 暂无描述 | `() => string` |
+| `getZoom` | 当前缩放等级 | `() => number` |
+| `getCenter` | 获取中心位置 | `() => ILngLat` |
+| `getPitch` | 暂无描述 | `() => number` |
+| `getRotation` | 获取旋转角度 | `() => ILngLat` |
+| `getBounds` | 暂无描述 | `() => Bounds` |
+| `getMapContainer` | 地图容器 | `() => HTMLElement | null` |
+| `getMapCanvasContainer` | 地图绘制 `canvas` 容器 | `() => HTMLElement` |
+| `setRotation` | 设置旋转角度 | `(rotation: number): void` |
+| `zoomIn` | 放大一级 | `(option?: any, eventData?: any): void` |
+| `zoomOut` | 缩小一级 | `(option?: any, eventData?: any): void` |
+| `panTo` | 平移 | `(p: Point): void` |
+| `panBy` | 以像素为单位沿 X 方向和 Y 方向移动地图 | `(pixel: Point): void` |
+| `fitBounds` | 缩放至指定范围 | `(bound: Bounds, fitBoundsOptions?: unknown): void` |
+| `setZoom` | 同上 | `() => number` |
+| `setMapStyle` | 设置地图样式 | `(style: any): void` |
+| `setMapStatus` | 暂无描述 | `(option: Partial<IStatusOptions>): void` |
+| `pixelToLngLat` | 像素转经纬度 | `(pixel: Point): ILngLat` |
+| `lngLatToPixel` | 经纬度转像素 | `(lnglat: Point): IPoint` |
+| `containerToLngLat` | 暂无描述 | `(pixel: Point): ILngLat` |
+| `lngLatToContainer` | 暂无描述 | `(lnglat: [number, number], altitude: number): IMercator` |
+| `getModelMatrix` | 暂无描述 | `() => number` |
+| `lngLatToMercator` | 暂无描述 | `(lnglat: [number, number], altitude: number, rotate: [number, number, number], scale: [number, number, number], origin: IMercator): number[]` |
+| `exportMap` | 导出地图 | `(type: 'jpg' | 'png'): string` |
+
+### 示例与思考
+
+- [设置图层](https://l7.antv.vision/zh/examples/tutorial/layer#layer_highlight): 可根据每个图层点击或其他操作设置其他图层数据
+  <!--
+      exportPng(type?: 'png' | 'jpg'): string;
+      exportMap(type?: 'png' | 'jpg'): string;
+      registerRenderService(render: any): void;
+      render() => void;
+      addImage(id: string, img: IImage): void;
+      hasImage(id: string): boolean;
+      removeImage(id: string): void;
+      addIconFontGlyphs(fontFamily: string, glyphs: IIconFontGlyph[]): void;
+      addPopup(popup: IPopup): void;
+       -->
+
+## 参考
+
+### 高德
+
+- [高德热力图](https://lbs.amap.com/api/javascript-api/reference/layer#m_AMap.Heatmap) [Demo](https://lbs.amap.com/api/javascript-api/example/selflayer/heatmap)
+- [自定义地图模板](https://lbs.amap.com/dev/mapstyle/index): 可能需要登录
+- [mapbox](https://docs.mapbox.com/mapbox-gl-js/api/#map.event)
+<!-- https://www.cnblogs.com/qifei-jia/p/7727944.html -->

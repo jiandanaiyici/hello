@@ -1,0 +1,23 @@
+.chart_list {
+  display: flex;
+  align-items: center;
+  line-height: 1;
+  font-size: 12px;
+  height: 32px;
+  white-space: nowrap;
+  overflow: auto;
+  border-bottom: 1px red solid;
+  width: 100%;
+
+  .chart_item {
+    position: relative;
+    display: inline-block;
+    transition: all 0.2s linear;
+    background-color: currentColor;
+
+    &.one {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}

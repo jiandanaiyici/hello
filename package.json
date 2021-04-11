@@ -11,6 +11,8 @@
     "start:typescript": "cd packages/typescript && npm run start",
     "start:website": "cd packages/website && npm run start",
     "start:interview": "cd packages/interview && npm run start",
+    "start:chart": "cd packages/chart && npm run start",
+    "start:chart-preview": "cd examples/chart && npm run start",
     "surge:webpack": "cd packages/webpack && npm run surge",
     "surge:electron": "cd packages/electron && npm run surge",
     "surge:node": "cd pacakges/node && npm run surge",
@@ -18,7 +20,9 @@
     "surge:typescript": "cd packages/typescript && npm run surge",
     "surge:website": "cd packages/website && npm run surge",
     "surge:interview": "cd packages/interview && npm run surge",
-    "surge:vue": "cd packages/vue && npm run surge"
+    "surge:vue": "cd packages/vue && npm run surge",
+    "surge:chart": "cd packages/chart && npm run surge",
+    "surge:chart-preview": "cd examples/chart && npm run surge"
   },
   "devDependencies": {
     "lerna": "^3.22.1",

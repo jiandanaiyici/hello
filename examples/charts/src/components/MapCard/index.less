@@ -1,0 +1,53 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  height: 100%;
+  width: 100%;
+  position: relative;
+
+  &.start {
+    justify-content: start;
+  }
+
+  &.end {
+    justify-content: end;
+  }
+
+  &.space-between {
+    justify-content: space-between;
+  }
+
+  &.space-around {
+    justify-content: space-around;
+  }
+
+  &.center {
+    justify-content: center;
+  }
+
+  &.column {
+    flex-direction: column;
+  }
+
+  &.column-reverse {
+    flex-direction: column-reverse;
+  }
+
+  &.row {
+    flex-direction: row;
+  }
+
+  &.row-reverse {
+    flex-direction: row-reverse;
+  }
+
+  .card_header {
+    flex: none;
+  }
+
+  .card_body {
+    position: relative;
+    flex: 1;
+  }
+}

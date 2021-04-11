@@ -1,0 +1,28 @@
+---
+id: L7-Basic
+title: 基础用法
+sidebar_label: 基础用法
+---
+
+## 安装
+
+```bash
+# L7依赖
+npm install --save @antv/l7
+
+# 第三方底图依赖
+npm install --save @antv/l7-maps
+```
+
+## 地图分类
+
+> 由于 `L7` 目前还不支持内置的地图底层实现方法, 需要引入第三方的引擎, 可分为两类, 分别是 `GaodeMap` 和 `Mapbox` 两种, 在内部实现解决了地图之间的差异性
+
+### GaodeMap
+
+> 在使用高德地图之前需要注意的是, 要注册一个属于自己的 `token` 然后引入高德的 `js Brage`代码
+
+
+<iframe src="https://codesandbox.io/s/gaodeditu-5mwls" width="100%" height="500px" />
+
+<!-- source: https://gw.alipayobjects.com/os/rmsportal/oVTMqfzuuRFKiDwhPSFL.json -->
