@@ -1,16 +1,17 @@
-# process
+---
+title: Process
+---
 
 [process](https://nodejs.org/api/process.html): 是 `node` 中的一个模块, 创建一个文件 `process.js`, 在执行 `node` 命令之后对于一些进程相关的很有用, 另外还有一个衍生的子进程([child_process](http://nodejs.cn/api/child_process.html))
 
-
-----
+---
 
 ### 常用
 
 #### 读取变量
 
 ```ts
-process.env.NODE_ENV // development
+process.env.NODE_ENV; // development
 ```
 
 #### argv
@@ -20,7 +21,9 @@ process.env.NODE_ENV // development
 ```json
 node ./docs/node/process.js name=name age=100
 ```
-将会被解析为: 
+
+将会被解析为:
+
 ```ts
 [
   // 当前node 的绝对路径
