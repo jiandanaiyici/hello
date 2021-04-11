@@ -25,7 +25,14 @@
     "surge:vue": "cd packages/vue && npm run surge",
     "surge:chart": "cd packages/chart && npm run surge",
     "surge:chart-preview": "cd examples/chart && npm run surge",
-    "surge:css": "cd packages/css && npm run surge"
+    "surge:css": "cd packages/css && npm run surge",
+    "example:css": "cd examples/webpack/css && npm run start",
+    "example:vue": "cd examples/webpack/vue && npm run start",
+    "example:react": "cd examples/webpack/react && npm run start",
+    "example:ts": "cd examples/webpack/ts && npm run start",
+    "example:vite-react": "cd examples/vite/react-vite && npm run start",
+    "example:vite-vue": "cd examples/vite/vite-vue && npm run start",
+    "example:charts": "cd examples/charts && npm run start"
   },
   "devDependencies": {
     "lerna": "^3.22.1",
