@@ -2,7 +2,8 @@
   "name": "root",
   "private": true,
   "scripts": {
-    "bootstrap": "yarn && npx lerna bootstrap"
+    "bootstrap": "yarn && npx lerna bootstrap",
+    "start:webpack": "cd packages/webpack && npm run start"
   },
   "devDependencies": {
     "lerna": "^3.22.1",

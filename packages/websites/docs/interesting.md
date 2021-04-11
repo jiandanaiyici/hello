@@ -42,3 +42,5 @@ id: interesting
 - [KIM 导航](https://kim.plopco.com/)
 
 <!-- 1 . GIF 图片加字幕： http ：刀～ . gifnteXt . com / 2 ．在线图片合成工具： http : / / adornpic . com / 3 ．比薪水： https : / / salary ．伽 Z # modal 一 Anonymousprovided 4 . Fi nd ing 日。 me ：酷炫的界面动感的配音体验之后才懂 5 ．冷知识合集： http : / / factoclock . com / 6 ．恶搞同事： http : / / nopebutton . com / 7 . chinese posters ：年代感图片搜索库 5 ．在线将视频转化为 G IF : http : / / makeagif . com / 9 ．边玩游戏边打字： htt ps : / / www . typingclub . com / 1 0 ．图片极限压缩： http : / / needsmorejpeg · com / 1 1 ．看截图识别原版动漫： https : / / whatanime . ga / 1 2 ．超渭 360 度全景照片： https : / / W 功八 N . 360citieS . net / 1 3 ．在线制作可翻页的电子书： http : / / papermine . com / 1 4 ．在线制作手绘动画： http : / / flipanim . C0m / 1 5 ．电商数据查询： http : / / www . zhishubao . com / index · php 1 6 ．互联网导航神器： http : / / hao . 1 99it . com / 1 7 ．无聊又好玩的网站： http : / / www . theuseleSSWeb . com / 1 5 ．在线制作地图： https : / / mapchart . net / 1 9 ．在线 1090 制作： http : / / WWW · Iogomaker · 20 . Piixemto 二在线类测试素材合集 com . cn / 头条号／一祸汤 -->
+
+http://www.astrangertowords.com/

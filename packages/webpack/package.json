@@ -1,0 +1,12 @@
+{
+  "name": "nz-webpack",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "docsify serve docs",
+    "surge": "surge docs --domain nz-webpack.surge.sh"
+  },
+  "repository": "git@github.com:jiandanaiyici/nz-webpack.git",
+  "author": "聂海锋 <niexiaofei@yahoo.com>",
+  "license": "MIT"
+}
