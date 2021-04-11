@@ -1,0 +1,103 @@
+---
+id: nzpromise
+title: 手写 Promise
+---
+
+看了很多网上的文章别人的解析, 发现有些时候可能理解起来并不是那么的简单顺畅, 归根究底的问题就是对 [Promise](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise) 的定义以及使用方式有些误解, 那么先看一下基础的规范和一些方法
+
+### 规范
+
+#### 1. 声明
+
+首先 Promise 是一个类, 就用 `ES6` 的语法
+
+- 通过 `new Promise((resolve, reject) => {})` 接收函数作为参数, 创建时即执行
+- 函数有两个处理函数, `resolve` 成功回调 `reject` 失败回调,
+
+```typescript
+class NzPromise {
+  constructor(executor) {
+    let resolve = () => {};
+    let reject = () => {};
+
+    /** 立即执行 */
+    executor(resolve, reject);
+  }
+}
+```
+
+#### 2. 状态
+
+**`Promise` 存在三种状态**
+
+- `pending`(等待中): 非成功 非失败 初始化
+- `fulfilled`(已完成 或 已成功): 成功状态
+- `rejected`(已拒绝): 失败状态
+
+无论是成功或失败都不能再次进行改变, 成功时必须要包含 `value`(成功返回值) 及状态修改为成功状态(`fulfilled`), 失败时必须要包含 `reason`(失败原因) 以及修改状态为失败状态(`rejected`), 如果初始化立即执行失败时则执行 `reject`, 先将状态维护
+
+```typescript
+class NzPromise {
+  constructor(executor) {
+    this.state = 'pending';
+    this.value = undefined;
+    this.reason = undefined;
+
+    let resolve = (value) => {
+      if (this.state === 'pending') {
+        this.state = 'fulfilled';
+        this.value = value;
+      }
+    };
+
+    let reject = (reason) => {
+      if (this.state === 'pending') {
+        this.state = 'rejected';
+        this.reason = reason;
+      }
+    };
+
+    /** 初始化执行时失败 直接 rejected */
+    try {
+      executor(resolve, reject);
+    } catch (error) {
+      reject(error);
+    }
+  }
+}
+```
+
+### 3. then 方法
+
+规定: `then` 接收两个函数作为参数, 当 `state`状态为`fulfilled` 成功回调(`onFulfilled`), 当 `state` 状态为 `rejected` 失败回调(`onRejected`), 重要的一点是
+当接收的两个参数不是函数时则忽略, [参考](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/then#%E5%8F%82%E6%95%B0)
+
+```typescript
+then(onFulfilled, onRejected) {
+  /** 需要判断是否为函数 */
+  if (this.state === 'fulfilled') {
+    onFulfilled(this.value);
+  }
+
+  if (this.state === 'rejected') {
+    onRejected(this.reason);
+  }
+}
+```
+
+---
+
+### 参考
+
+- [Promise A+ 规范](https://promisesaplus.com/)
+- [Promise A+ 规范](https://malcolmyu.github.io/malnote/2015/06/12/Promises-A-Plus/#Promise)
+- [【翻译】Promises/A+规范](https://www.ituring.com.cn/article/66566)
+- [BAT 前端经典面试问题：史上最最最详细的手写 Promise 教程](https://juejin.cn/post/6844903625769091079)
+- [JavaScript Promise 迷你书](http://liubin.org/promises-book/)
+- [domenic/promises-unwrapping](https://github.com/domenic/promises-unwrapping): ES6 Promises 规范的 repo - 可以通过查看 issue 来了解各种关于规范的来龙去脉和信息。
+- [Promises](https://www.promisejs.org/)
+- [JavaScript Promises: An introduction](https://web.dev/promises/)
+- [**ES6-Promise**](https://github.com/stefanpenner/es6-promise)
+- [promise-polyfill](https://github.com/taylorhakes/promise-polyfill)
+- [9k 字 | Promise/async/Generator 实现原理解析](https://juejin.cn/post/6844904096525189128)
+- [一起学习造轮子（一）：从零开始写一个符合 Promises/A+规范的 promise](https://juejin.cn/post/6844903617619558408)

@@ -1,0 +1,254 @@
+---
+id: this
+title: 关于 This
+slug: /this
+---
+
+### 描述
+
+关于基础知识的 `this`这个话题网上有很多种解释, 最多的一种就是在函数被调用时的情况决定了 `this` 的指向, 在了解 `this` 之前 需要先了解关于 JS 的运行环境, 每当执行代码时就会进入执行上下文, 会形成一个作用域
+可分为三种: 全局执行上下文, 函数执行上下文 和 eval 函数执行上下文(`eval` 函数内部包含属于自己的执行上下文, 也没使用过, 其他包括现在比较规范的做法就是不建议使用 `eval` 所以不进行考虑) 先了解几个基础而又抽象的概念
+
+**执行环境**: 是 `JavaScript` 中最为重要的一个概念, 执行环境定义了变量或函数有权访问的其他数据, 决定了他们各自的行为, 每个执行环境都有一个与之相关联的变量对象(`variable object`)
+环境中定义的所有变量和函数都保存在这个对象中
+
+**上下文调用栈**: 执行上下文栈是一个栈结构, 后进先出的数据结构, 以存储该脚本的生命周期期间创建的执行堆栈, 默认情况下执行程序后, 进入全局作用域栈中且位于最底部,
+如果引擎遇到了函数调用, 那么进入函数调用栈中创建函数执行上下文, 并将推入栈顶, 一旦执行完该函数内的所有代码, 引擎就会弹出函数的执行栈, 并执行下面的函数
+
+- 全局环境: 当代码执行时将进入全局的执行上下文中, 并创建全局对象 `window` 及将 `this` 绑定到全局变量 `this`, 一个程序中只会包含一个全局对象
+- 函数环境: 每个函数都有自己的执行环境, 当执行到函数内部开始就进入了函数调用的栈中, 也就是函数作用域
+
+以上描述可以看出: `作用域` 是为了约束变量可访问的权限, 而 `this`则是在执行代码在特定作用域内指定的对象, 想要明确的知道 `this`的指向问题, 就需要明白调用点以及绑定规则 以及优先顺序, 通常情况下都会认为是谁调用的就指向谁, 不能说是错误的, 但并不准确
+
+####  默认绑定(Default Binding)
+
+如果是在严格模式(`use strict`)下, `this` 为 `undefined`
+
+如果函数作为自由独立函数进行调用时, 可以认为此时的 `this`是在没有其他规则适用的默认规则
+
+```typescript
+function fn() {
+  console.log(this); // window global 可以使用 globalThis
+}
+```
+
+#### 隐式绑定(Implicitly Lost)
+
+如果某个函数作为方法(即如果使用点运算符调用时) `this` 指向当前所属的对象, 当 `setTimeout` 中引用对象中的方法时, 将会造成 `this` 丢失
+
+```typescript
+var name = '1';
+function say() {
+  console.log(`My Name is: ${this.name}`);
+}
+
+const b = {
+  name: "I'm B",
+  a: function () {
+    console.log(this.name);
+  },
+  say, // 这里只是将 say 引用了而已, 等同于重新赋值
+};
+
+b.a(); // 1
+say(); // My Name is: 1
+b.say(); // My Name is: I'm B
+```
+
+接着看 `setTimeout`
+
+```typescript
+function say() {
+  console.log(this.name);
+}
+const obj = {
+  name: 'object',
+  say,
+};
+const name = 'Global';
+say(); // Global
+obj.say(); // object
+setTimeout(obj.say, 0); // Global setTimeout(fn, time) 接收函数作为第一个参数, 就等同于 fn = obj.say 引用了 obj.say 最终调用时还是 fn() 进行执行, 在全局作用域下执行的都执行默认绑定规则
+```
+
+#### 显示绑定(Explicit Binding)
+
+在 `Function.prototype` 上有三个方法是可以改变 `this`的指向, `call` `bind` 和 `apply`, 具体的区别下边说. 显示绑定可以分为两种形式
+
+- 硬绑定: 通过 `call` `apply` 和 `bind`调用, 接收第一个参数为指定 `this` 值
+- 调用 API 的上下文绑定: 比如高阶函数 `map(fn)`, `every` `some` `forEach` `sort`等
+
+```typescript
+function foo(el) {
+  console.log(el, this.id);
+}
+var obj = { id: 'awesome' };
+[1, 2, 3].forEach(foo, obj);
+
+function sum(num) {
+  return num + this.age;
+}
+const obj = {
+  age: 10,
+};
+
+arr.map(sum, obj);
+```
+
+#### new 绑定(new Binding)
+
+通过 new 构造函数的实例化对象, 除了会继承构造函数的 `prototype`之外, 如果没有指定返回内容时将内部 `this` 指向了实例化对象, 比如`Number` `Object` 对象
+
+```typescript
+function Person(name) {
+  this.name = name;
+}
+
+Person.prototype.say = function() {
+  console.log(this.name);
+}
+
+const p = new Person('Hello');
+p.say(): // Hello
+
+// ES6
+class Person {
+  constructor(name) {
+    this.name = name;
+    return {};
+  }
+
+  say() {
+    console.log(this.name);
+  }
+}
+
+const p = new Person('Hello');
+```
+
+这里涉及到了 `new` 的创建过程
+
+- 创建或构造一个全新的对象
+- 将新对象和 `prototype`连接
+- 新对象会绑定到函数调用的 `this`
+- 如果函数没有指定放回值时, 那么 `new` 表达式中的函数调用会自动返回这个新对象
+
+#### 优先级
+
+既然有这几种规则, 假设同时出现两种或以上的规则, 应该按照哪种规则执行呢, 主要体现在 `new` 和 显示绑定的优先级
+
+- 默认规则优先级最低
+- 显示绑定高于隐式绑定
+- 显示绑定高于 `new` 绑定
+
+```typescript
+const name = 'Global Default';
+function say() {
+  console.log(`My Name is: ${this.name}`);
+}
+
+const obj = {
+  name: 'Implicitly',
+  say,
+};
+
+const explicitObj = {
+  name: 'Explicit',
+};
+
+obj.say(); // Implicitly
+obj.say.call(explicitObj); // Explicit
+```
+
+## 示例题
+
+查看以下打印结果
+
+### 1
+
+```typescript
+function special() {
+  console.log(`姓名: ${this.name}`);
+}
+
+const girl = {
+  name: '小红',
+  detail: function () {
+    console.log(`姓名: ${this.name}`);
+  },
+  woman: {
+    name: '小黄',
+    detail: function () {
+      console.log(`姓名: ${this.name}`);
+    },
+  },
+  special,
+};
+
+girl.detail();
+girl.woman.detail();
+girl.special();
+```
+
+### 2
+
+```typ
+const name = '小红';
+function a() {
+  var name = '小白';
+  console.log(this.name);
+}
+
+function d(i) {
+  return i();
+}
+
+var b = {
+  name: '小黄',
+  detail: function () {
+    console.log(this.name);
+  },
+  bibi: function () {
+    return function () {
+      console.log(this.name);
+    };
+  },
+};
+```
+
+### 参考
+
+- **执行环境及作用域: JavaScript 高级程序设计第四章 4.2**
+
+#### 中文
+
+- [This MDN](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/this)
+- [[译] 理解 JavaScript 中的执行上下文和执行栈](https://juejin.cn/post/6844903682283143181)
+- [前端面试-this](https://www.youtube.com/watch?v=RmxUKDsYHmc&list=PLMN9fM-0gQ90NMxWjL2xnWQoFh-28pwa_&index=5): 视频 youtube
+- [this](https://yangbo5207.github.io/wutongluo/ji-chu-jin-jie-xi-lie/wu-3001-this.html)
+- [globalThis](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/globalThis): 用于检测全局 `this`值
+- [说说执行上下文吧](https://juejin.cn/post/6844904158957404167)
+- [深入理解 js this 绑定 ( 无需死记硬背，尾部有总结和面试题解析 )](https://segmentfault.com/a/1190000011194676)
+- [JS 中的箭头函数与 this](https://juejin.cn/post/6844903573428371464)
+- [「前端面试题系列 4」this 的原理以及用法](https://segmentfault.com/a/1190000017957307)
+- [JavaScript 的 this 原理](https://www.ruanyifeng.com/blog/2018/06/javascript-this.html)
+- [You Don't Know JS](https://github.com/getify/You-Dont-Know-JS)
+- [不用 call 和 apply 方法模拟实现 ES5 的 bind 方法](https://github.com/jawil/blog/issues/16)
+- [能否模拟实现 JS 的 bind 方法](https://juejin.cn/post/6844903718089916429)
+- [JavaScript 深入之 call 和 apply 的模拟实现](https://juejin.cn/post/6844903476477034510)
+- [你不知道的 JS 系列——全面解析 this](https://juejin.cn/post/6844903823996092423)
+- [[译] JavaScript 中至关重要的 Apply, Call 和 Bind](https://hijiangtao.github.io/2017/05/07/Full-Usage-of-Apply-Call-and-Bind-in-JavaScript/)
+
+#### 英文
+
+- [The Simple Rules to ‘this’ in Javascript](https://codeburst.io/the-simple-rules-to-this-in-javascript-35d97f31bde3)
+- [Javascript’s “new” Keyword Explained as Simply as Possible](https://codeburst.io/javascripts-new-keyword-explained-as-simply-as-possible-fec0d87b2741)
+- [How does the “this” keyword work? --StackOverflow](https://stackoverflow.com/questions/3127429/how-does-the-this-keyword-work/3127440#3127440)
+- [The Complete Rules to `this`](https://www.educative.io/courses/step-up-your-js-a-comprehensive-guide-to-intermediate-javascript/7nA1nGn3V6A)
+- [This In Javascript](https://zellwk.com/blog/this/)
+- [Understanding JavaScript Function Invocation and "this"](https://yehudakatz.com/2011/08/11/understanding-javascript-function-invocation-and-this/)
+
+#### 代码
+
+- [Function.prototype.bind](https://github.com/Raynos/function-bind/blob/master/implementation.js)
+- [bind polyfill](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/bind#polyfill)

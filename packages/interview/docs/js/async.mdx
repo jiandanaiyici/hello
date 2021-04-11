@@ -1,0 +1,337 @@
+---
+title: 异步
+id: async
+---
+
+在之前的记录中已经多次使用到 `Promise`来处理异步操作, 那么对 `Promise` 了解多少呢 ?
+
+### 为什么会出现 `Promise` ?
+
+在出现 `Promise` 之前的处理异步的方式方式大概是这样子的, 模拟场景: 进入系统之后先请求用户信息, 根据用户信息来判断是否有权限或者登陆过, 如果登陆过或者有权限时
+则进入主应用请求表格列表, 等待列表数据返回后 再根据返回数据中的每一条数据进行查询每一条缺失的数据(因为不在同一个数据库中且数据不是实时的, 第一次查询表格时无法确定具体返回时间, 不能让用户一直在等, 展示部分信息)
+
+**模拟发送请求**
+
+```typescript
+http.get('getUserInfo.json', (data) => {
+  if (data.success) {
+    http.get('getTableList.json', (tableData) => {
+      if (tableData.success) {
+        const { list } = tableData;
+        // 根据返回结果 循环遍历查询更多详情信息
+        http.get('getDetailInfo.json', (detailInfo) => {
+          if (detailInfo.success) {
+            setState(/** 最后才是根据返回信息和原来表格数据进行一一合并 */);
+          }
+        });
+      }
+    });
+  }
+});
+```
+
+**读取本地文件进行修改**
+
+```typescript
+const fs = require('fs');
+const path = require('path');
+
+const filePath = path.join(__dirname, 'test.text');
+
+fs.readFile(filePath, 'utf-8', (err, data) => {
+  if (data) {
+    const result = data + '你好!';
+    fs.writeFile(filePath, result, (err) => {
+      if (err) {
+        console.log('写入失败');
+      }
+    });
+  }
+});
+```
+
+以上只是冰山之一角, 可见以往的开发是多么的伤脑子, 假设无论哪种情况都需要各种各样的依赖执行的话, 这样的嵌套逻辑代码只会越写越多, 最后看着就像是无穷的大于号, 阅读维护起来极其麻烦
+最后造成了 [回调地狱](https://75.team/post/%E8%AF%91%E5%9B%9E%E8%B0%83%E5%9C%B0%E7%8B%B1.html)
+那么解决回调 `Promise` `Generators` `Async Await` 的到来就像是看到了春天
+
+### 概念
+
+一个 [Promise](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise) 对象表示异步操作的最终值(无论是成功或失败), 通过接受成功和失败回调函数创建对象
+`new Promise((resole, reject))` 具有三种状态
+
+- `Pending`: 初始化
+- `Fulfilled`: 成功状态, 执行 `resolve`
+- `Rejected`: 失败状态, 执行 `reject` 回调
+
+无论是成功或失败都可以在之后的 [then](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/then) 方法中通过成功或失败处理函数获取到值或者失败原因.那么简单的形式大概如下
+
+```typescript
+const p = new Promise((resole, reject) => {
+  resole('success');
+});
+
+const p1 = new Promise((resole, reject) => {
+  setTimeout(() => {
+    reject(new Error('你知道做错了吗?'));
+  }, 1000);
+});
+p.then((result) => {
+  consoel.log(result); // success;
+});
+
+p1.then(onFulfilled, (error) => {
+  // 报错了
+});
+```
+
+可以看出第一个执行了成功回调, 第二个执行了失败的回调, 除了可以使用 then 第二个参数捕获错误还可以通过 [catch](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch)进行捕获同时 `then` 和 `then`都会返回一个新的 `Promise` 对象都会包含同样的方法, 那么就可以进行链式调用了
+还包含一些其他的方法
+
+#### [then](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/then):
+
+当`Promise`状态发生改变时无论成功或失败都会执行回调函数, 属于原型链上的方法, 初始化实例之后可调用
+
+#### [catch](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/catch)
+
+需要注意的是
+
+- 不会捕获其中的异步错误只会捕获 通过 `then`的 onRejected 回调中返回的错误
+- 只能捕获最近的一次错误, `catch` 之后返回的 `Promise` 中的错误不会被捕获
+- 尽量的在所有的 `Promise`之后都添加 `catch`, 可以详见[常见错误](https://stackoverflow.com/questions/23803743/what-is-the-explicit-promise-construction-antipattern-and-how-do-i-avoid-it)避免一些错误的产生, 做好防御性措施
+- 避免[反模式](https://stackoverflow.com/questions/23803743/what-is-the-explicit-promise-construction-antipattern-and-how-do-i-avoid-it)
+
+#### [finally](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/finally)
+
+- 无论成功或失败都会执行, 因为无法确定最终状态, 所以不接收任何参数
+- 通过链式调用之后只需要一个 finally 处理即可
+- 在此处理回调中的错误, 将会直接将通过指定的原因拒绝新的`Promise`
+
+```typescript
+// 模拟 React 中添加 loading,当然没那么标准
+const useQuery = <T = any>(queryService: () => Promise<T>) => {
+  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<T>({});
+
+  useEffect(() => {
+    queryService()
+      .then((result) => {
+        setData(result);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
+  }, []);
+
+  return [loading, data];
+};
+```
+
+---- **以下几种为静态方法, 都接收一个可迭代对象作为参数, 只是处理方式不同,同时都遵循几个相同的规则** -----
+
+- 可迭代对象为空时, 返回已经完成的 `Promsie`, 等同于 直接调用了 `Promise.resolve`
+- 传入的迭代对象中未包含 `Promise`的元素将会返回成功状态
+
+#### [all](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/all)
+
+接收可迭代的对象(无论是否为 `Promise`对象),只要其中一个失败就返回失败, 只有当所有都成功之后才会返回由成功返回值组成的数组
+
+#### [allSettled](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled)
+
+接收可迭代数组, 无论成功或失败, 只要所有对象状态改变之后返回组成的一个数组(成功的返回值 & 失败的错误原因, 可以通过遍历查看对应的 result 和 reason)
+
+#### [race](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/race)
+
+只要其中任意一个成功或失败就直接返回
+
+#### [any](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/any)
+
+只要其中任意一个改为了成功状态, 那就返回对应的值, 如果所有的都失败就返回一个[AggregateError](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/AggregateError), 当前提案中
+
+[![MDN Promise](https://mdn.mozillademos.org/files/8633/promises.png)](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise#%E6%8F%8F%E8%BF%B0)
+
+**查看以下每种方法的执行结果**
+
+```typescript
+const p1 = new Promise((resole) => {
+  setTimeout(resole, 1000, 'P1 执行结果');
+});
+
+const p2 = new Promise((resole, reject) => {
+  setTimeout(() => {
+    reject('P2 失败原因');
+  }, 2000);
+});
+
+const p3 = 333;
+const p4 = new Error('P4 不行了');
+
+const promises = [p1, p2, p3, p4];
+
+Promise.all(promises)
+  .then((d) => {
+    console.log(d);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+Promise.allSettled(promises)
+  .then((d) => {
+    console.log(d);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+Promise.race(promises)
+  .then((d) => {
+    console.log(d);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
+Promise.any(promises)
+  .then((d) => {
+    console.log(d);
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+```
+
+[查看执行结果](../../static/img/async/promise.png)
+[在线尝试](https://codepen.io/niexiaofei/pen/XWpRQWN)
+
+### 常用的几种方式
+
+#### 串行请求
+
+### 参考
+
+#### [优雅的 Promise](https://developer.mozilla.org/zh-CN/docs/Learn/JavaScript/Asynchronous/Promises)
+
+- [Callback Hell](http://callbackhell.com/)
+- [Node.js Async Best Practices & Avoiding the Callback Hell](https://blog.risingstack.com/node-js-async-best-practices-avoiding-callback-hell-node-js-at-scale/)
+- **[new Image](https://developer.mozilla.org/zh-CN/docs/Web/API/HTMLImageElement/Image): 注意点 `img.src` 必须放在 `onload` 处理函数后**
+- [**ES6-Promise**](https://github.com/stefanpenner/es6-promise)
+- [**Async utilities for node and the browser**](https://caolan.github.io/async/v3/)
+- [**异步函数-提高 Promise 的易用性**](https://developers.google.com/web/fundamentals/primers/async-functions)
+- [**优雅的 Promise**](https://developer.mozilla.org/zh-CN/docs/learn/JavaScript/%E5%BC%82%E6%AD%A5/Promises%E8%AF%AD%E6%B3%95)
+- **[Promises/A+规范](https://promisesaplus.com/)  **[**中文译文(图灵社区)**](https://www.ituring.com.cn/article/66566)
+- **[Promises-spec](https://github.com/promises-aplus/promises-spec)  **[**更多的实现 Promise**](https://github.com/promises-aplus/promises-spec/blob/master/implementations.md)
+- **[Promis 详解与实现(简书)](https://www.jianshu.com/p/459a856c476f)   **[**你能实现一个 Promise 么**](https://juejin.im/post/5c41297cf265da613356d4ec#heading-13)
+- [**30 seconds of code runPromisesInSeries**](https://www.30secondsofcode.org/js/s/run-promises-in-series/)
+- [**How to use Lo-Dash functions with Async/Await**](https://hackernoon.com/how-to-use-lo-dash-functions-with-async-await-b0be7709534c)**: 如何在 lodash 的循环中使用 `async`**
+- [**Lodash: is it possible to use map with async functions?**](https://stackoverflow.com/questions/47065444/lodash-is-it-possible-to-use-map-with-async-functions)**: 同样的是讲解结合 `lodash`使用 `async`**
+- [**Why Using reduce() to Sequentially Resolve Promises Works **](https://css-tricks.com/why-using-reduce-to-sequentially-resolve-promises-works/)**: 讲解为什么使用 `reduce`实现`promise`的串行操作**
+- [**用 Reduce 实现 Promise 的串行**](https://github.com/dt-fe/weekly/issues/109)**: 在很久之前同事问过一次这个问题, 当时并没有想到, 还是对知识掌握不够彻底**
+- [**promise-fun**](https://github.com/sindresorhus/promise-fun)**: 对于一些 `promise`操作的扩展**
+- [**promise-queue-plus**](https://github.com/cnwhy/promise-queue-plus/blob/master/src/queue.js)**: 队列模块执行**
+- [**视频**](https://www.bilibili.com/video/BV1W4411Q7XA/?spm_id_from=333.788.videocard.0)
+- [**深入理解 Javascript 回调函数**](https://dzone.com/articles/javascript-callback-functions-in-depth-guide-for-2)** ( **[**中文**](https://juejin.im/post/5dc1474df265da4d1518ee76)** )**
+- [**Event Loop**](https://blog.carbonfive.com/the-javascript-event-loop-explained/)
+- [**JS 的事件循环(Event Loop)**](https://segmentfault.com/a/1190000015317434)
+- [**回调地狱的前世今生**](https://juejin.im/entry/57fa6a4e67f3560058752542)
+- [Generators](https://www.promisejs.org/generators/)
+- [Async/await = generator + promise](https://medium.com/@abhishekraj_14802/async-await-generator-promise-6f6eda8be17)
+- [async 函数](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/async_function)
+- [Using promises](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Guide/Using_promises)
+- [Promises/A+ specification](http://promisesaplus.com/)
+- [Venkatraman.R - JS Promise (Part 1, Basics)](https://medium.com/@ramsunvtech/promises-of-promise-part-1-53f769245a53)
+- [Venkatraman.R - JS Promise (Part 2 - Using Q.js, When.js and RSVP.js)](https://medium.com/@ramsunvtech/js-promise-part-2-q-js-when-js-and-rsvp-js-af596232525c#.dzlqh6ski)
+- [ Venkatraman.R - Tools for Promises Unit Testing](https://tech.io/playgrounds/11107/tools-for-promises-unittesting/introduction)
+- [Jake Archibald: JavaScript Promises: There and Back Again](http://www.html5rocks.com/en/tutorials/es6/promises/)
+- [ Domenic Denicola: Callbacks, Promises, and Coroutines – Asynchronous Programming Patter in JavaScript](http://de.slideshare.net/domenicdenicola/callbacks-promises-and-coroutines-oh-my-the-evolution-of-asynchronicity-in-javascript)
+- [Matt Greer: JavaScript Promises ... In Wicked Detail](http://www.mattgreer.org/articles/promises-in-wicked-detail/)
+- [Forbes Lindesay: promisejs.org](https://www.promisejs.org/)
+- [Speed-polyfill to polyfill both promise availability and promise performance.](https://github.com/anonyco/SPromiseMeSpeedJS/blob/master/README.md)
+- [Nolan Lawson: We have a problem with promises — Common mistakes with promises](http://pouchdb.com/2015/05/18/we-have-a-problem-with-promises.html)
+- [Promise polyfill](https://github.com/jakearchibald/es6-promise/)
+- [Udacity: JavaScript Promises](https://www.udacity.com/course/javascript-promises--ud898)
+
+### 试题
+
+以下几道题考查了对 `Promise` 的一些定义, 来源[Promise 必知必会（十道题）](https://juejin.cn/post/6844903509934997511), 虽然理解了事件循环的机制, 是否就可以完全正确说出执行顺序
+
+#### 题目一
+
+```typescript
+const promise = new Promise((resolve, reject) => {
+  console.log(1);
+  resolve();
+  console.log(2);
+});
+
+promise.then(() => {
+  console.log(3);
+});
+
+console.log(4);
+/** 1 2 4 3: Promise.then 是异步的微任务, 但构造函数是同步的 */
+```
+
+#### 题目二
+
+```typescript
+const promise1 = new Promise((resolve, reject) => {
+  setTimeout(() => {
+    resolve('success');
+  }, 1000);
+});
+const promise2 = promise1.then(() => {
+  throw new Error('error!!!');
+});
+
+console.log('promise1', promise1);
+console.log('promise2', promise2);
+
+setTimeout(() => {
+  console.log('promise1', promise1);
+  console.log('promise2', promise2);
+}, 2000);
+```
+
+#### 题目八
+
+```typescript
+Promise.resolve(1).then(2).then(Promise.resolve(3)).then(console.log);
+/** then 或者 catch 参数期望是函数, 传入非函数则会发生值穿透 */
+```
+
+#### 题目九
+
+```typescript
+Promise.resolve()
+  .then(
+    function success(res) {
+      throw new Error('error');
+    },
+    function fail1(e) {
+      console.error('fail1: ', e);
+    },
+  )
+  .catch(function fail2(e) {
+    console.error('fail2: ', e);
+  });
+```
+
+`then` 可以接收两个参数, 第一个是成功处理的函数, 第二个是处理失败的函数, `then`无法捕获到第一个处理成功后抛出的错误, 但是 `catch`可以 等同于
+
+```typescript
+Promise.resolve()
+  .then(
+    function success1(res) {
+      throw new Error('error');
+    },
+    function fail1(e) {
+      console.error('fail1: ', e);
+    },
+  )
+  .then(
+    function success2(res) {},
+    function fail2(e) {
+      console.error('fail2: ', e);
+    },
+  );
+```

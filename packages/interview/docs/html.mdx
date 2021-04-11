@@ -1,0 +1,136 @@
+---
+title: HTML
+id: HTML
+slug: /
+---
+
+### 标准页面文档的格式
+
+以下代码被称为标准的 `HTML`文档书写规范
+
+```html
+<!DOCTYPE html>
+<html>
+  <head>
+    <tilte>Title</title>
+    <meta name="keywords" content="your, tags">
+    <style>
+    <!-- css -->
+    </style>
+  </head>
+  <body>
+    <script>
+      // JS 代码
+    </script>
+  </body>
+</html>
+```
+
+### DOCTYPE 的作用 ?
+
+帮助浏览器通过什么样的解析模式解析文档, DOCTYPE 全称: 'document type', 是一种区分 标准模式 和 怪异模式的声明
+
+```html
+<!-- 在页面最顶层进行声明 -->
+<!DOCTYPE html>
+```
+
+### 页面元数据
+
+元数据是用来描述数据的数据（Data that describes other data）
+
+**参考**
+
+- [元数据](https://www.ruanyifeng.com/blog/2007/03/metadata.html): 元数据最大的好处是，它使信息的描述和分类可以实现格式化，从而为机器处理创造了可能。
+- [HEAD](https://github.com/joshbuchea/HEAD): 收集了当前所有关于元数据的使用及含义, [在线查看](https://htmlhead.dev/)
+- [Meta Tags](https://gist.github.com/lancejpollard/1978404)
+- [HTML META TAGS](https://github.com/kevinSuttle/html-meta-tags)
+- [标准元数据名称](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/meta/name)
+- [其他元数据名称](https://wiki.whatwg.org/wiki/MetaExtensions)
+- [The Ultimate Guide to SEO Meta Tags](https://moz.com/blog/the-ultimate-guide-to-seo-meta-tags)
+- [mata](https://metatags.io/): 在线生成测试元数据
+
+**参考**
+
+- [使用 Doctype 激活浏览器模式](https://hsivonen.fi/doctype/)
+- [怪异模式和标准模式](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Quirks_Mode_and_Standards_Mode)
+
+### 标签分类 ?
+
+- 块级: 总是独占一行, 可设置 `width height padding margin` 等属性, 样式设置默认为 `display: block;`
+- 行内: 表现形式为: `display: inline;` 不能设置 `width padding height margin` 等属性, `span a ` 标签
+- `dispaly: inline-block`: 天生自带两者属性的 `input img button textarea label`
+
+### 图片间隙 ?
+
+天生 `inline-block` 标签都会产生一定的间隙问题, 解决此问题的方式有多种
+
+- 设置 `font-size: 0;` 适用于 `img` 标签
+- 设置 `display: block;` 适用于所有标签, 不过这样就会影响原本布局
+- 设置 `float` 样式, 脱离文档流, 问题是需要清除浮动
+
+### data- 属性 ?
+
+### tabindex ?
+
+指示其元素是否可以聚焦, 可通过 `tab` 键进行操作, 按照数值大小聚焦顺序, 如数值为正值表示可进行聚焦, 其设置最大值为 `32767`, 如果未设置
+默认值为 `0`, 但需要注意的是在滚动容器设置了 `tabindex` 值后, 对内部滚动有所影响, 可通过在子容器上设置 `tabindex` 解决
+
+[查看这篇 fiddle 来理解 tabindex 的滚动影响](https://jsfiddle.net/jainakshay/0b2q4Lgv/)
+
+### HTML5 新增的标签以及含义
+
+在 HTML5 中定义了一些包含语义的标签, 使得文档更好的解析, 有利于 SEO 优化
+
+- [header](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/header)
+- [picture](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/picture): 可用于针对 `img` 加载不同适应的图片资源
+
+### src 和 href ?
+
+- src: 指将下载资源到 `HTML` 中, 且会阻塞解析渲染过程, 直到完全该资源加载或执行完毕. 更多的比如: img iframe 和 script 加载外部资源
+- href: 当前文档和引入资源的关系, 不会阻塞解析渲染, 这里涉及到 `@import`: 加载 css 的另一种方式 影响浏览器的并行下载
+
+**参考: [Difference between SRC and HREF](https://stackoverflow.com/questions/3395359/difference-between-src-and-href)**
+
+### img 的 alt 属性和 srcset ?
+
+img 标签除了必要的 `src`属性用来加载图片资源之外, 还有一些其他属性
+
+- `alt`属性, 虽然不是必须设置的, 但设置了之后可以有利于阅读器的识别, 建议设置
+- `srcset`: 表示可以访问的图片集合设置, 有利于响应式设计的开发
+
+另外还增加了 [picture](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/picture) 可用于响应开发中加载多种图片资源, 根据媒体查询条件加载对应资源
+
+### 什么是 defer 和 async 上一个属性`<script>`标签？
+
+在正常的 `html` 文档中, 添加外部加载资源是有一定的顺序的
+
+- async: `script` 标签添加 `async` 时, 即异步加载不会阻塞解析过程, 加载完之后即可执行. 执行顺序不受控制, 适合于相互之间没有依赖关系
+- defer: 如果需要等到文档解析完成之后执行, 使用 `defer` 会按照引入顺序进行执行, 适合于相互之间有依赖关系
+
+### 网页的图片格式 ?
+
+`png` `gif` `png-8` `png-24` `jpeg` `svg`
+
+**参考[支持的图片格式 MDN](https://developer.mozilla.org/zh-CN/docs/Web/HTML/Element/img#%E6%94%AF%E6%8C%81%E7%9A%84%E5%9B%BE%E5%83%8F%E6%A0%BC%E5%BC%8F)**
+更多的可能需要关注 [A new image format for the Web](https://developers.google.com/speed/webp/)
+
+### 优化
+
+- 图片懒加载: 通过滚动高度判断当前 `img` 节点是否在可视区域内加预设好的 `data-src` 属性修改为 `src` 的值
+- css: 雪碧图 CSSsprite，SVGsprite，Iconfont、Base64 等
+- 图片过大时可先设置占位图 或者 加载一张预设压缩过的图片, 等图片加载完成后进行替换,
+
+- [The technology behind preview photos](https://engineering.fb.com/2015/08/06/android/the-technology-behind-preview-photos/)
+- [Image optimization: Lossy, lossless and other techniques](https://jmperezperez.com/image-optimization-lossy-lossless-techniques/)
+- [How Medium does progressive image loading](https://jmperezperez.com/medium-image-progressive-loading-placeholder/) 译文[Medium 图片加载模式](https://github.com/lx7575000/Translation/blob/master/%EF%BC%88%E8%AF%91%EF%BC%89Medium%E5%9B%BE%E7%89%87%E5%8A%A0%E8%BD%BD%E6%A8%A1%E5%BC%8F/%EF%BC%88%E8%AF%91%EF%BC%89Medium%E5%9B%BE%E7%89%87%E5%8A%A0%E8%BD%BD%E6%A8%A1%E5%BC%8F.md)
+- [谷歌搜索中心](https://developers.google.com/search)
+- [CSS 优化建议总结](https://juejin.cn/post/6844903500963397640#heading-16)
+
+### 10. 渐进式渲染 (progressive rendering) ?
+
+### 跨标签页通信方式 ?
+
+### 更多参考
+
+- [HTML5](https://www.tutorialspoint.com/html5/)

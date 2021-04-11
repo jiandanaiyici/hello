@@ -1,0 +1,133 @@
+---
+slug: features
+title: Javascript ES 的那些新功能
+author_url: https://github.com/niexiaofei1988
+description: 关于 ES 的那些新功能你用了吗 ?
+---
+
+### 1. 逻辑赋值运算符
+
+逻辑赋值运算符结合的逻辑运算(比如: `??` `&&` 或 `||`) 与 分配(例如: `=`), 直接上例子
+
+- `a ||= b` 返回 如果 `a` 是 `truthy`是返回 `a`, 如果是 `falsy` 返回 `b`;
+
+```typescript
+let a = 1;
+
+// old way
+
+if (!a) {
+  a = b;
+}
+// or
+a = a || b;
+
+// new way
+a ||= b;
+```
+
+- `a &&= b`: 大致同上, 如果 `a` 是 `truthy` 返回 `b` 如果 `a` 是 `falsy` 则返回的是 `false`
+
+```typescript
+let a = false;
+let b = true;
+const c = 'test';
+
+// old way
+if (a) {
+  a = c;
+}
+a = a && c;
+
+// new way
+a &&= c; // a = false,按照旧写法的话 a = a && c; 得到的也是 false
+b &&= c; // test, b = b && c;
+```
+
+- `a ??= b`: 如果 `a` 为 `null` 或者 `undefined`那么返回 `b`, 否则返回 `a`, 具体参考[空值合并操作符](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Nullish_coalescing_operator)
+
+```typescript
+// old way
+a = a ?? b;
+
+// new way
+a ??= b;
+```
+
+以上三种方式看起来貌似是简化了, 但总体感觉像是有点别扭(虽然是和 `+= -= *= /=`类似), 特别另外需要注意的是 空格, 万一不小心写成了 `?? =` 可能就会出现问题
+
+### 2. Promise.any
+
+`Promise` 至今已经有了各种各样的处理方法, [Promise.resolve](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/resolve) [Promise.reject](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/reject), [Promise.race](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/race), [Promise.all](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/all),
+[Promise.allSettled](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/allSettled) 当然还有其他的 `then` `finally` 和 `catch`,而 [Promise.any](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Promise/any) 从字面上看就是任何状态, 接收的是可迭代对象, 分两种情况
+
+- 如果迭代对象中的状态有一个为 `resolve` 状态, 那么就会返回`resolve`, 但只有一个值 并不会像 `Promise.all` 返回的是数组
+- 如果所有都失败了, 那么就会异步变成失败状态, 返回 [AggregateError](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/AggregateError) 错误
+
+```jsx live
+// 测试借助于组件渲染 方便查看
+function Demo() {
+  const [msg, setMsg] = React.useState('');
+  const [err, setErr] = React.useState('错误');
+  const first = React.useCallback(() => {
+    // 期望输出: "很快完成"
+    const pErr = new Promise((resolve, reject) => {
+      reject('总是失败');
+    });
+
+    const pSlow = new Promise((resolve, reject) => {
+      setTimeout(resolve, 2000, '最终完成');
+    });
+
+    const pFast = new Promise((resolve, reject) => {
+      setTimeout(resolve, 1000, '很快完成');
+    });
+
+    Promise.any([pErr, pSlow, pFast]).then((value) => {
+      console.log(value);
+      setMsg(value);
+    });
+  }, []);
+
+  const second = React.useCallback(() => {
+    const pErr = new Promise((resolve, reject) => {
+      reject('失败了');
+    });
+
+    const pErr1 = new Promise((resolve, reject) => {
+      reject('又失败了');
+    });
+
+    Promise.any([pErr, pErr1]).catch((err) => {
+      console.log(
+        err.errors,
+        '打开控制台, React 已经报错了, 捕获到 errors: 所有失败返回的列表',
+      );
+      setErr(err.toString());
+    });
+  }, []);
+
+  React.useEffect(() => {
+    first();
+    second();
+  }, []);
+
+  return (
+    <React.Fragment>
+      <span>
+        哪怕失败状态先返回只要其中一个状态是成功的就返回成功值为:
+        <span style={{ color: 'yellowgreen' }}>{msg}</span>
+      </span>
+      <br />
+      <span>
+        如果所有都失败了返回:
+        <span style={{ color: 'red' }}>{err}</span>
+      </span>
+    </React.Fragment>
+  );
+}
+```
+
+## 参考
+
+- [值得兴奋的 Javascript ES 2021 (ES12) 的三大功能](https://betterprogramming.pub/the-top-3-new-javascript-es-2021-es-12-features-im-excited-about-a3ac129efbb2)

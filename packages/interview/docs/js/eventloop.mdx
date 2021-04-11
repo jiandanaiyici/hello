@@ -1,0 +1,380 @@
+---
+title: 事件循环
+id: eventloop
+---
+
+## 基础概念
+
+面试时总是会问道一个问题, 你了解事件循环(Event Loop)么 ? 刚开始的时候本以为能够刷刷面试题背下来就完事了, 但是当深入了解时才知道这些东西是很重要的一部分, 如果只是背下来而不了解前因后果的话也仅仅是应付面试而已, 所以搜集了大量的资源进行学习查看, 首先需要了解一些基础的概念, 线程 进程 浏览器解析工作原理 渲染机制 最后才是答案
+有些例子是采用的工厂, 突然间想到房子好像也是一样的道理, 尝试着使用房子作为示例, 仅仅学习理解而已
+
+- 同步: 执行完函数或者方法之后, 一直等待返回值或者信息, 程序会被阻塞
+- 异步: 执行完函数或方法之后, 不必一直等待返回值, 向程序委托一个异步过程,当有返回值时执行回调函数
+
+### 线程 & 进程
+
+CPU 是计算机的核心, 承担所有的计算任务: 可以理解为一栋楼
+
+**进程: CPU 分配的最小单位** 可以理解为一个可以独立且拥有自己的资源空间的任务程序, 这里解释为一套三室一厅的房子为一家人的居所地
+**线程: CPU 调用的最小运行单位**: 可以理解为线程就是程序中的一个执行流, 所有的程序路径按照连续顺序排下来
+
+线程是基于进程之上的, 意思就是说一个进程可以包含多个线程(多线程)或者仅一个线程(称为单线程)
+
+进程之间相互独立(每家每户都是一个独立的团体) 而各个线程之间都可以共享同一个进程下的内存空间(厨房 卫生间 客厅等)包括代码段 数据集 等一些资源
+
+### 为什么 JS 是单线程
+
+作为浏览器脚本语言主要用途就是与用户互动 以及操作 DOM ,决定了只能是单线程, 假设同时有两个线程, 一个线程在某个 DOM 节点上添加内容, 另一个线程删除了 DOM 节点, 浏览器就不清楚到底应该依据哪一个下您常能为准了就会造成混乱,
+所以哪怕是浏览器有多个内核也只能在一个线程上进行执行, 称为主线程
+
+### 浏览器包含哪些进程
+
+浏览器可以有多个进程, 每个进程之间相互独立, 哪怕是其中一个进程崩溃了也不至于会影响到其他进程内部的运行, 包含以下几个进程
+
+#### Browser 进程
+
+- 浏览器的主进程(负责协调, 主控)仅此一个, 也就是说主脑
+- 负责浏览器界面显示, 与用户交互, 如前进 后退等
+- 负责各个页面的管理, 创建和销毁其他进程, 比如打开了多个 `Tab` 可以关闭
+- 将渲染(Renderer)进程得到的内存中的 BitMap(位图), 绘制到用户界面上
+- 网络资源的管理, 下载等
+
+#### 第三方插件进程
+
+- 每种类型的插件对一个一个进程, 当使用该插件时才创建
+
+#### GPU 进程
+
+- 该进程也只有一个, 用于 3D 绘制等等, 可以通过 `css` 的 3D 方式开启 GPU 加速处理
+
+#### 渲染进程
+
+- 通常所说的浏览器内核(Renderer 进程, 内部是多线程)
+- 每个 Tab 页面都有一个渲染进程, 互不影响
+- 主要作用为页面渲染, 脚本执行, 事件处理等
+
+### 渲染进程 Renderer
+
+#### GUI 渲染线程
+
+- 负责渲染浏览器界面, 解析`HTML` `CSS` 构建 `DOM` 和 `RenderObject` 树,布局和绘制等
+  - 解析 `HTML`页面转换为浏览器认识的节点, 生成 `DOM` 树(DOM Tree)
+  - 解析 `CSS` 生成 `CSSOM` (`CSS规则树`)
+  - 把 DOM Tree 和 `CSSOM`结合形成最后的渲染树
+- 修改元素的颜色或者背景色页面会重绘
+- 修改元素的尺寸页面就会回流
+- GUI 渲染线程 和 JS 引擎线程是互斥的
+  - 当 JS 引擎执行时 GUI 线程被挂起
+  - GUI 更新会被保存在一个队列中等到 JS 引擎空闲时立即执行
+- GUI 和 JS 线程互斥
+  - 当执行 JS 时间较长时,就会造成页面的渲染不连贯, 导致页面渲染加塞
+  - 当浏览器渲染的时候遇到 `script` 标签, 就会停止 `GUI` 渲染然后`JS`引擎开始工作, 每一次的 GUI 渲染都会在 JS 执行结束之后
+
+#### 事件触发线程
+
+- 属于浏览器而不是 JS 引擎, 用来控制事件循环, 并管理着一个事件队列
+- 当执行碰到事件绑定和一些异步操作(setTimeout, setInterval 也可以是其他线程 如 鼠标点击 AJAX 异步请求等) 会走事件触发线程 将对应的事件添加到对应的线程中, 定时器操作添加到定时器线程, 等异步事件有了结果. 便把他们的回调操作添加到事件队列等待 JS 引擎空闲时来处理
+- 当对应的事件符合触发条件被触发时, 该线程会把事件添加到等待处理队列的队尾等待 JS 引擎的处理
+- 因为 JS 是单线程, 所以这些待处理队列中的事件都得排队等待 JS 引擎处理
+
+#### JS 引擎线程
+
+- 负责处理 Javascript 脚本程序
+- 负责解析 Javascript 脚本
+
+#### 定时触发器线程
+
+- `setTimeout` 和 `setInterval`
+- 浏览器定时器并不是由 `JS` 引擎计数的, 如果处于阻塞线程状态就会影响计时的准确, 比如执行计算某一个结果需要 `1S` 定时器设置事件 `500ms` 那么就会等到 `1500ms` 之后才会执行定时器的回调函数
+- `W3C`在标准中规定要求 `setTimeout` 中低于 `4ms`的时间间隔算为 `4ms`
+
+#### 异步 HTTP 请求线程
+
+- 在 `XMLHttpRequest` 在连接后是通过浏览器新建一个线程请求
+- 在检测到状态变更时,如果设置了回调函数, 异步线程就产生状态变更事件, 将这个回调放入事件队列中等待这 JS 引擎执行
+
+其中 事件触发线程 是需要通过 `DOM`节点绑定, 定时触发线程 和 异步 HTTP 请求线程都是属于 [WEB API](https://developer.mozilla.org/zh-CN/docs/Learn/JavaScript/Client-side_web_APIs/Introduction) 的范围, 除此之外还有
+[window.requestAnimationFrame](https://developer.mozilla.org/zh-CN/docs/Web/API/Window/requestAnimationFrame)
+
+## 事件循环
+
+```bash
+Task A --> Task B --> Task C
+```
+
+这也就意味着所有任务都需要进行排队, 前一个任务执行结束之后才能执行下一个任务, 如果前一个任务耗时比较长, 后一个任务就不得不一直等着, 在设计时意识到可以先不管 IO 设备, 挂起处于等待中的任务, 先运行排在后面的任务, 等到 IO 设备返回了结果, 再回头将挂起的任务继续执行
+于是所有任务就分为两种, 一种是同步任务, 另一种就是异步任务
+
+- 同步任务: 主线程上排队执行的任务, 只有前一个任务执行完毕, 才能执行下一个任务.
+- 异步任务: 不进入主线程, 而进入任务队列的任务, 只有任务队里通知主线程, 某个异步任务可以执行了, 该任务才会进入主线程执行
+
+同步任务都会在主线程中执行(也就是 JS 引擎线程), 形成一个执行栈, 主线程之外, 事件触发线程管理着一个事件队列, 只有异步操作有返回值后, 就会在事件队列中放入一个事件回调, 一旦执行栈中的任务都已经执行完, 系统就会读取事件队列中是否有包含已经有返回值的事件回调, 如果有就执行, 没有就再次进行询问, 周而复始
+这样的操作就称为事件循环机制
+
+先看一下这段代码执行结果
+
+```typescript
+let setTimeoutCallBack = function () {
+  console.log('我是定时器回调');
+};
+let httpCallback = function () {
+  console.log('我是http请求回调');
+};
+
+// 同步任务
+console.log('我是同步任务1');
+
+// 异步定时任务, 虽然在同步事件2 之前, 但会交给定时器线程进行管理时间且等待时间到达时将所有的同步任务执行结束后才会执行
+setTimeout(setTimeoutCallBack, 1000);
+
+// 异步http请求任务, 交给HTTP线程处理, 等待结果返回后进行执行
+ajax.get('/info', httpCallback);
+
+// 同步任务
+console.log('我是同步任务2');
+
+1. 同步任务1
+2. 同步任务2
+```
+
+### 宏任务 & 微任务
+
+**常见的宏任务:**
+
+- 主代码块
+- setTimeout && setInterval
+- requestAnimationFrame: 浏览器处理定时执行动画
+
+**微任务**
+
+- process.nextTick(): Nodejs
+- Promise.then()
+- catch
+  = finally
+- Object.observe
+- MutationObserver
+
+需要注意的是: 创建 `Promise` 对象时是立即执行的, 只有 `resolve` 或者 `reject` 的 `then`方法内接收的函数才是回调函数
+
+队列也分为两种, 微任务队列 宏任务队列
+
+**执行顺序:**
+
+- 1. 先执行 宏任务(整段代码), 同步任务执行完之后, 检查宏任务队列, 如果有进入下一步, 为空则跳转 3
+- 2. 取宏任务中的第一个进行执行, 结束后进行下一步
+- 3. 检查是否有微任务, 若不为空 则进入下一步 为空则跳转 1
+- 4. 取微任务中第一个进行执行, 执行结束后跳转 3
+
+### 参考
+
+- [浏览器与 Node 的事件循环(Event Loop)有何区别?](https://blog.fundebug.com/2019/01/15/diffrences-of-browser-and-node-in-event-loop/)
+- [JavaScript 是单线程的](https://developer.mozilla.org/zh-CN/docs/Learn/JavaScript/Asynchronous/Concepts#javascript_%E6%98%AF%E5%8D%95%E7%BA%BF%E7%A8%8B%E7%9A%84)
+- **[Javascript 运行机制详解: 再谈 Event Loop](http://www.ruanyifeng.com/blog/2014/10/event-loop.html) **[**Web Worker**](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Using_web_workers)
+- [Writing a JavaScript framework - Execution timing, beyond setTimeout](https://blog.risingstack.com/writing-a-javascript-framework-execution-timing-beyond-settimeout/)
+- [**I’m stuck in an event-loop**](https://www.youtube.com/watch?v=6MXRNXXgP_0)
+- [https://krasimirtsonev.com/blog/article/Help-Iam-stuck-in-an-event-loop-by-Philip-Roberts](https://krasimirtsonev.com/blog/article/Help-Iam-stuck-in-an-event-loop-by-Philip-Roberts)
+- [**JS 事件循环**](https://cloud.tencent.com/developer/article/1332957)
+- **[两分钟了解 Event Loop](https://www.bilibili.com/video/BV1kf4y1U7Ln?from=search&seid=7315103161037949240): 速度够快, 解释够清晰**
+- [**事件循环轮询以及微任务和宏任务**](https://www.bilibili.com/video/BV1Si4y1c7rh?p=3)
+- [Tasks, microtasks, queues and schedules](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/?utm_source=html5weekly)
+- [**深入理解 Javascript 回调函数**](https://dzone.com/articles/javascript-callback-functions-in-depth-guide-for-2)** ( **[**中文**](https://juejin.im/post/5dc1474df265da4d1518ee76)** )**
+- [**Javascript 中的 Event Loop 机制**](https://segmentfault.com/a/1190000022805523)
+- [**Event Loop**](https://blog.carbonfive.com/the-javascript-event-loop-explained/)
+- [**JS 的事件循环(Event Loop)**](https://segmentfault.com/a/1190000015317434)
+- [**回调地狱的前世今生**](https://juejin.im/entry/57fa6a4e67f3560058752542)
+- [「硬核 JS」一次搞懂 JS 运行机制](https://juejin.cn/post/6844904050543034376)
+- [**单线程和多线程**](https://juejin.im/post/5a6547d0f265da3e283a1df7#heading-0)
+- [**异步执行的几种方式**](https://www.cnblogs.com/zuobaiquan01/p/8477322.html)
+- [**异步详解**](https://www.cnblogs.com/dirkhe/p/7384743.html)
+- [**异步机制**](https://juejin.im/post/5a6ad46ef265da3e513352c8)
+- [**同步, 异步 和事件循环**](https://segmentfault.com/a/1190000004322358)
+- [**tasks-microtasks-queues-and-schedules**](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)
+- [**按顺序请求**](https://developers.google.com/web/fundamentals/primers/async-functions#_5)
+- [**Tasks, microtasks, queues and schedules**](https://jakearchibald.com/2015/tasks-microtasks-queues-and-schedules/)
+- [**How JavaScript works**](https://blog.sessionstack.com/how-javascript-works-event-loop-and-the-rise-of-async-programming-5-ways-to-better-coding-with-2f077c4438b5)
+- [**从 event loop 规范探究 javaScript 异步及浏览器更新渲染时机**](https://github.com/aooy/blog/issues/5)
+- [**这一次，彻底弄懂 JavaScript 执行机制**](https://juejin.im/post/59e85eebf265da430d571f89)
+- [前端性能优化：细说浏览器渲染的重排与重绘](https://juejin.cn/post/6844903641816514573)
+- [10 分钟看懂浏览器的渲染过程及优化](https://juejin.cn/post/6844903877314101255)
+- [**【THE LAST TIME】彻底吃透 JavaScript 执行机制**](https://juejin.im/post/5d901418518825539312f587)
+- [**一次弄懂 Event Loop（彻底解决此类面试问题）**](https://juejin.im/post/5c3d8956e51d4511dc72c200)
+- [**浏览器与 Node 的事件循环(Event Loop)有何区别?**](https://zhuanlan.zhihu.com/p/54882306)
+- [**深入理解 JavaScript Event Loop**](https://zhuanlan.zhihu.com/p/34229323)
+- [**The Node.js Event Loop, Timers, and process.nextTick()**](https://nodejs.org/en/docs/guides/event-loop-timers-and-nexttick/)
+- [《一文看懂浏览器事件循环》](https://lucifer.ren/blog/2019/12/11/event-loop/)
+- [浏览器与 Node 的事件循环(Event Loop)有何区别?](https://juejin.cn/post/6844903761949753352)
+- [深入理解 js 事件循环机制（Node.js 篇）](https://lynnelv.github.io/js-event-loop-nodejs)
+- [微任务、宏任务与 Event-Loop](https://juejin.cn/post/6844903657264136200)
+- [面试题：说说事件循环机制(满分答案来了)](https://juejin.cn/post/6844904079353708557)
+- [Node 定时器](https://www.ruanyifeng.com/blog/2018/02/node-event-loop.html)
+- [JavaScript 运行机制详解：再谈 Event Loop](https://www.ruanyifeng.com/blog/2014/10/event-loop.html)
+- [Web Worker](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API)
+- [NodeJS 事件循环](https://nodejs.org/zh-cn/docs/guides/event-loop-timers-and-nexttick/#what-is-the-event-loop)
+- [Node.js Internals: Event loop in action](https://medium.com/softup-technologies/node-js-internals-event-loop-in-action-59cde8ff7e8d)
+- [史上最全！图解浏览器的工作原理](https://www.infoq.cn/article/cs9-wzqlnr5h05hhdo1b)
+- [「前端进阶」从多线程到 Event Loop 全面梳理](https://juejin.cn/post/6844903919789801486#heading-4)
+- [The Secret Life of Event Loop - Meetup Overview](https://symphony.is/blog/secret-life-event-loop-meetup-overview)
+- [JavaScript Visualized: Event Loop](https://dev.to/lydiahallie/javascript-visualized-event-loop-3dif)
+- [Node.js event loop workflow & lifecycle in low level](https://www.voidcanvas.com/nodejs-event-loop)
+
+**浏览器工作原理**
+
+- [浏览器的工作原理](https://developer.mozilla.org/zh-CN/docs/Web/Performance/How_browsers_work)
+- [浏览器的工作原理：新式网络浏览器幕后揭秘](https://www.html5rocks.com/zh/tutorials/internals/howbrowserswork/#Parsing_general)
+- [How browsers work](https://domenicodefelice.blogspot.com/2015/08/how-browsers-work.html?t=2)
+- [HTML](https://whatwg-cn.github.io/html/#toc-workers)
+- [从输入 URL 到页面加载的过程？如何由一道题完善自己的前端知识体系！](https://juejin.cn/post/6844903574535667719)
+- [极客浏览器工作原理与实践](https://blog.poetries.top/browser-working-principle/)
+- [从浏览器多进程到 JS 单线程，JS 运行机制最全面的一次梳理](https://segmentfault.com/a/1190000012925872)
+- [《浏览器工作原理与实践》学习笔记（一）](https://www.jianshu.com/p/aed92ba156b8)
+- [浏览器工作原理](https://cloud.tencent.com/developer/article/1670862)
+- [深入理解浏览器工作原理](https://www.cnblogs.com/xiaohuochai/p/9174471.html)
+- [一文看懂 Chrome 浏览器工作原理](https://juejin.cn/post/6844904046411644941)
+- [前端都该懂的浏览器工作原理，你懂了吗？](https://segmentfault.com/a/1190000022633988)
+- [深入了解浏览器](https://developers.google.com/web/updates/2018/09/inside-browser-part1)
+  = [详解浏览器工作原理](https://juejin.cn/post/6844904040753545230)
+- [How browsers work](http://taligarsiel.com/Projects/howbrowserswork1.htm#1Q64p5DeC8dKFF)
+- [JS 一定要放在 Body 的最底部么？聊聊浏览器的渲染机制](https://segmentfault.com/a/1190000004292479)
+- [Js 基础知识（四） - js 运行原理与机制](https://segmentfault.com/a/1190000013119813)
+- [前端文摘：深入解析浏览器的幕后工作原理](https://www.cnblogs.com/lhb25/p/how-browsers-work.html)
+- [理解事件循环一(浅析)](https://github.com/ccforward/cc/issues/47)
+
+---
+
+**Nodejs v10 之后的执行顺序和浏览器相同**
+
+### FAQ
+
+#### 如何绘制调用栈的流程图 ?
+
+- [Visualizing the javascript runtime at runtime](https://github.com/latentflip/loupe)
+- [写一个 JS 调用栈可视化工具 hound-trace](https://blog.csdn.net/songfens/article/details/99800028)
+
+---
+
+### 示例题
+
+以下示例题分别输出的顺序是什么 ?
+
+#### 1
+
+```typescript
+async function async1() {
+  console.log('1 start');
+  await async2();
+  console.log('1 end');
+}
+
+async function async2() {
+  console.log('2');
+}
+
+console.log('script start');
+
+setTimeout(() => {
+  console.log('settimout');
+}, 0);
+async1();
+new Promise((resolve) => {
+  console.log('promise1');
+  resolve();
+}).then(function () {
+  console.log('promise2');
+});
+console.log('script end');
+```
+
+#### 2
+
+```typescript
+const p = function () {
+  return new Promise((resolve) => {
+    const p1 = new Promise((res) => {
+      setTimeout(() => {
+        res(1);
+      }, 0);
+
+      res(2); // 可尝试注释
+    });
+
+    p1.then((res) => {
+      console.log(res);
+    });
+
+    console.log(3);
+    resolve(4);
+  });
+};
+
+p().then((res) => {
+  console.log(res);
+});
+
+console.log('end');
+```
+
+#### 3
+
+```typescript
+console.log('start');
+setTimeout(() => {
+  console.log('2');
+  Promise.resolve().then(() => {
+    console.log('3');
+  });
+}, 0);
+
+new Promise(function (resolve, reject) {
+  console.log('4');
+  setTimeout(() => {
+    console.log('5');
+    resolve('6');
+  }, 0);
+}).then((res) => {
+  console.log('7');
+  setTimeout(() => {
+    console.log(res);
+  }, 0);
+});
+```
+
+#### 4
+
+```typescript
+console.log(1);
+/** setTimeout1 */
+setTimeout(function () {
+  console.log(2);
+}, 0);
+
+const intervalId = setInterval(function () {
+  console.log(3);
+}, 0);
+
+setTimeout(function () {
+  console.log(10);
+  new Promise(function (resolve) {
+    console.log(11);
+    resolve();
+  })
+    .then(function () {
+      console.log(12);
+    })
+    .then(function () {
+      console.log(13);
+      clearInterval(intervalId);
+    });
+}, 0);
+
+Promise.resolve()
+  .then(function () {
+    console.log(7);
+  })
+  .then(function () {
+    console.log(8);
+  });
+
+console.log(9);
+```
+
+---

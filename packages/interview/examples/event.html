@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>事件流</title>
+
+    <style>
+      html,
+      body {
+        margin: 0;
+      }
+
+      div {
+        padding: 16px 20px;
+        text-align: center;
+        border: 1px currentColor solid;
+        cursor: pointer;
+        user-select: none;
+      }
+
+      .baby {
+        color: yellowgreen;
+      }
+
+      .daughter {
+        color: aqua;
+      }
+
+      .mother {
+        color: chocolate;
+      }
+
+      .grandma {
+        color: violet;
+        margin: 30px auto;
+        width: 300px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="grandma">
+      Grandma
+      <div class="mother">
+        Mother
+        <div class="daughter">
+          Daughter
+          <div class="baby">Baby</div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      const baby = document.getElementsByClassName('baby')[0];
+      const daughter = document.getElementsByClassName('daughter')[0];
+      const mother = document.getElementsByClassName('mother')[0];
+      const grandma = document.getElementsByClassName('grandma')[0];
+
+      function sayName(event) {
+        console.log(
+          `I'm %c${this.className}`,
+          'color: red',
+          `Clicked: `,
+          event.target,
+        );
+      }
+
+      baby.addEventListener('click', sayName, false);
+      daughter.addEventListener('click', sayName, true);
+      mother.addEventListener('click', sayName, true);
+      grandma.onclick = sayName;
+    </script>
+  </body>
+</html>

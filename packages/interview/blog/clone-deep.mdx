@@ -1,0 +1,127 @@
+---
+slug: clone-deep
+title: 深拷贝 && 浅拷贝
+author_url: https://github.com/niexiaofei1988
+---
+
+**测试对象**
+
+```typescript
+const obj = {
+  a: {
+    b: {
+      c: function () {},
+      d: undefined,
+      e: null,
+      f: new Date(),
+      g: new RegExp('正则', 'g'),
+      // h: new Error('错误对象')
+    },
+  },
+  i: [1, 2, 3, [4, 5]],
+};
+```
+
+## 浅拷贝
+
+### 扩展运算符
+
+可以使用[扩展运算符](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Operators/Spread_syntax)(`...`) 或者 [Object.assign](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Object/assign#example_cloning_an_object)
+
+```typescript
+function clone<T>(source: T): T {
+  return Object.assign({}, source);
+}
+
+function clone<T>(source: T): T {
+  return { ...source };
+}
+```
+
+**在使用用同时要注意数据类型的限制: 必须是 对象 或者 数组才能使用 错误示例**
+
+```typescript
+const result = clone('abc'); // {0: "a", 1: "b", 2: "c"}
+const result = clone(1234); // {} 虽然没有报错但是也没有复制
+```
+
+### 循环遍历
+
+```typescript
+function clone<T = any>(source: T): T {
+  let result = {};
+
+  for (const key in source) {
+    if (Object.prototype.hasOwnProperty.call(source, key)) {
+      result[key] = source[key];
+    }
+  }
+
+  return result;
+}
+```
+
+### 总结
+
+既然是浅拷贝, 就会受到引用类型的干扰, 如果是 数组 或者 对象时, 源数据修改后 拷贝对象也会被修改, 比如
+
+## 深拷贝
+
+### 2. JSON.parse & JSON.stringify
+
+虽然这种方式看似最简单最快捷, 但是有一定的弊端, `undefined` `Function` `Symbol` `NaN`四种类型的结果不一样
+
+- 作为独立属性值时将会被 [JSON.stringify](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/JSON/stringify)过滤掉
+- 如果作为数组中的值时将会被转换为 `null`
+
+另外: 在使用 `JSON.stringify` 或者 `JSON.parse` 时 可能会引起 ❌ 错误,平时使用时尽可能的使用 `try catch` 包裹
+
+```typescript
+function cloneDeepObject<T = any>(obj: T): T {
+  return JSON.parse(JSON.stringify(obj));
+}
+```
+
+**以下是关于使用 [MDN 结构化克隆法](https://developer.mozilla.org/zh-CN/docs/Web/API/Web_Workers_API/Structured_clone_algorithm)**, 有一些限制, [定义](https://html.spec.whatwg.org/multipage/structured-data.html#structuredserializeinternal)
+
+- 不能克隆 `Error` 和 `Function`
+
+### 3. MessageChannel
+
+```typescript
+function clone<T = any>(source: T): Promise<T> {
+  return new Promise((resolve) => {
+    const { port1, port2 } = new MessageChannel();
+
+    port2.onmessage = (ev) => resolve(ev.data);
+    port1.postMessage(source);
+  });
+}
+```
+
+### 4. Notification
+
+```typescript
+function clone<T = any>(source: T): T {
+  return new Notification('', { data: source, silent: true }).data;
+}
+```
+
+返回 [结构化数据](https://developer.mozilla.org/zh-CN/docs/Web/API/Notification/data)
+
+---
+
+### 参考
+
+- [Deep Copy in Javascript](https://dassur.ma/things/deep-copy/)
+- [JSON.parse & JSON.stringify](https://jscurious.com/difference-between-json-parse-and-json-stringify/)
+- [JSON JS](https://github.com/douglascrockford/JSON-js/blob/master/cycle.js)
+- [Copying Object In Javascript](https://smalldata.tech/blog/2018/11/01/copying-objects-in-javascript#)
+- [lodash.clone](https://github.com/lodash/lodash/blob/4.17.15/lodash.js#L11029) && [lodash.cloneDeep](https://github.com/lodash/lodash/blob/4.17.15/lodash.js#L11087)
+- [Synchronous clone](https://github.com/whatwg/html/issues/793): 关于是否支持提供异步克隆方案
+
+<!-- ## 性能测试
+
+import Performance from '@theme/Performance';
+
+<Performance /> -->

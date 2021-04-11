@@ -1,0 +1,71 @@
+---
+id: closure
+title: 闭包
+---
+
+闭包就是指: 有权访问其他作用域中变量的函数, 创建闭包的最常见方式就是在一个函数内创建另一个函数, 通过另一个函数访问这个函数的局部变量, 利用闭包可以突破作用域链, 将函数内部的变量和方法传递到外部
+
+```typescript
+function outer() {
+  const a = 'a';
+
+  return function inner() {
+    return a;
+  };
+}
+```
+
+根据以上代码解析时, 在 `outer`函数内部定义的变量受到作用域的限制, 在 `outer`外部并不能访问到, 同时内部函数 `inner`也是在 `outer`内部定义的函数但通过作用域链的关系在其内部可以访问到 `inner`
+外部的变量, 此时访问到 `a` 的值为 `a`, 将函数 `inner` 作为 `outer`的返回值进行返回, 当执行 `outer()`之后, `outer` 就会被调用栈弹出(也就是内部定义的一些变量已经被销毁), 但又返回了内部函数 `inner`在外部被引用
+同样的 `inner` 内部又引用了变量 `a` 的值, 此时就等同于在外部就可以访问到 `outer` 内部的变量了, 解释的有些牵强
+
+**特性**
+
+- 函数内再嵌套函数
+- 内部函数可以引用外部函数的参数和变量, 外部无法直接引用内部参数和变量
+- 参数和变量不会被垃圾回收机制回收
+
+根据第二条特性, 可以模拟私有方法或者变量(暂未提供访问私有方法) 私有方法不仅仅有利于限制对代码的访问, 还提供了管理全局命名空间的强大能力, 避免非核心的方法弄乱了代码的公共接口部分
+
+```typescript
+// 定义命名空间
+const Counter = (() => {
+  let privateCounter = 0;
+  function changeBy(val) {
+    privateCounter += val;
+  }
+
+  return {
+    increment() {
+      changeBy(1);
+    },
+    decrement() {
+      changeBy(-1);
+    },
+    value() {
+      return privateCounter;
+    },
+  };
+})();
+```
+
+以上代码采用了模块模式(一种常见的设计模式, 用于将一组变量和函数包装在一个范围内, 用于定义对象并制定从函数作用域之外访问的变量和函数, 可通过匿名函数和闭包的特性创建命名空间), 这么做的好处
+
+- 冻结作用域
+- 代码封装
+- 创建私有或公共作用域
+- 创建一个命名空间
+- 创建公共和私有封装
+
+### 参考
+
+- [MDN 闭包](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Closures)
+- [JS 基础 - 作用域和闭包](https://github.com/L-small/blog/issues/13)
+- [JavaScript Module Pattern Basics](https://coryrylan.com/blog/javascript-module-pattern-basics): 解释模块模式
+- [Learning JavaScript Design Patterns](https://www.oreilly.com/library/view/learning-javascript-design/9781449334840/ch09s02.html)
+- [JavaScript Modules: A Beginner’s Guide](https://www.freecodecamp.org/news/javascript-modules-a-beginner-s-guide-783f7d7a5fcc/)
+- [Module pattern in JavaScript](https://dev.to/tomekbuszewski/module-pattern-in-javascript-56jm)
+- [Module Pattern in JavaScript](https://medium.com/technofunnel/data-hiding-with-javascript-module-pattern-62b71520bddd)
+- [The Revealing Module Pattern in Javascript](https://gist.github.com/zcaceres/bb0eec99c02dda6aac0e041d0d4d7bf2)
+- [Module Pattern in JavaScript](https://dzone.com/articles/module-pattern-in-javascript)
+- [How do Javascript closures work 闭包如何工作的?](https://stackoverflow.com/questions/111102/how-do-javascript-closures-work)

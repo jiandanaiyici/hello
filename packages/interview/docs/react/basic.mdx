@@ -1,0 +1,284 @@
+---
+id: basic
+title: 基础知识
+---
+
+
+### React 的生命周期及调用顺序 ?
+
+[生命周期图谱](https://projects.wojtekmaj.pl/react-lifecycle-methods-diagram/)
+
+import Tabs from '@theme/Tabs';
+import TabItem from '@theme/TabItem';
+import Mermaid from '@theme/Mermaid';
+import Link from '@material-ui/core/Link';
+import Divider from '@material-ui/core/Divider';
+
+<Tabs
+  defaultValue="Mounting"
+  values={[
+    { label: '挂载', value: 'Mounting' },
+    { label: '更新', value: 'Updating' },
+    { label: '卸载', value: 'banana' },
+    { label: '错误处理', value: 'Error' },
+  ]}
+>
+  <TabItem value="Mounting">
+    <Mermaid
+      chart={`
+        graph LR;
+            contructor-->getDerivedStateFromProps;
+            getDerivedStateFromProps-->render;
+            render-->componentDidMount;
+          click contructor "https://reactjs.org/docs/react-component.html#constructor" _blank
+          click getDerivedStateFromProps "https://reactjs.org/docs/react-component.html#static-getderivedstatefromprops" _blank
+          click render href "https://reactjs.org/docs/react-component.html#render" _blank
+          click getSnapshotBeforeUpdate href "https://reactjs.org/docs/react-component.html#getsnapshotbeforeupdate" _blank
+          click componentDidMount href "https://reactjs.org/docs/react-component.html#componentdidmount" _blank
+      `}
+    />
+  </TabItem>
+  <TabItem value="Updating">
+    <Mermaid
+      chart={`
+        graph LR;
+            getDerivedStateFromProps-->shouldComponentUpdate;
+            shouldComponentUpdate-->render;
+            render-->getSnapshotBeforeUpdate;
+            getSnapshotBeforeUpdate-->componentDidUpdate;
+          click getDerivedStateFromProps "https://reactjs.org/docs/react-component.html#static-getderivedstatefromprops" _blank
+          click shouldComponentUpdate href "https://reactjs.org/docs/react-component.html#shouldcomponentupdate" _blank
+          click render href "https://reactjs.org/docs/react-component.html#render" _blank
+          click getSnapshotBeforeUpdate href "https://reactjs.org/docs/react-component.html#getsnapshotbeforeupdate" _blank
+          click componentDidUpdate href "https://reactjs.org/docs/react-component.html#componentdidupdate" _blank
+      `}
+    />
+  </TabItem>
+  <TabItem value="Unmounting">
+    <a
+      href="https://reactjs.org/docs/react-component.html#componentwillunmount"
+      target="_blank"
+    >
+      componentWillUnmount: 取消网络请求及取消订阅等, 不能使用 setState
+    </a>
+  </TabItem>
+  <TabItem value="Error">
+    <Link
+      target="_blank"
+      href="https://reactjs.org/docs/react-component.html#static-getderivedstatefromerror"
+    >
+      getDerivedStateFromError
+    </Link>
+    <Divider orientation="vertical" flexItem />
+    <Link
+      target="_blank"
+      href="https://reactjs.org/docs/react-component.html#componentdidcatch"
+    >
+      componentDidCatch
+    </Link>
+  </TabItem>
+</Tabs>
+
+这里需要着重说明下几个周期
+
+- `componentDidCatch` 和 `getDerivedStateFromError` 都可以在渲染阶段捕获到后代组件中的错误, 但是无法捕获自身的错误, `componentDidCatch` 接收两个参数 `error`(抛出的错误) 和 `info`(带有错误栈 及 `key`值的错误信息),
+  `static getDerivedStateFromError`是静态方法, 只能通过类本身进行调用, 内部不能调用 `this`的任何方法, 且不允许使用副作用, 如若需要使用可在 `componentDidCatch`
+- `static getDerivedStateFromProps()`: 同样是静态方法, 通过返回对象更新 `state` 或者 返回 `null` 不更新
+
+---
+
+### 在什么阶段发送请求 ?
+
+**`class`组件**: 在 `componentDidMount` 阶段请求数据 或进行一些事件监听 or 定时器,同时在 `componentWillUnmout` 中取消事件监听和定时器
+**`Function`组件**: 在 `useEffect` 中发送请求
+
+---
+
+### 创建组件的方式 及 区别 ?
+
+太久远的 `React.createClass`方式就不再提了,通常个人认为现在定义组件的形式有两种,只分为 `class` 和 `Function` 组件,
+因为在 `hooks` 出现之后 `Function` 组件中可以维护自己内部的状态了
+
+- `class` 组件: 继承自 `Component` 或者 `PureComponent`
+- `Function` 组件: 在最初的时候理解为定义了函数组件就是定义了无状态组件(通常是纯渲染), `Hooks`之后这种理解就不对了
+
+---
+
+### `state` 和 `props` 的区别 ?
+
+**共同点:**
+
+- 都是普通的 `JS`对象
+- 无论是 `state` 或者 `props` 的改变都将会使组件重新渲染
+
+组件中的数据是向下流动的
+
+- `state`: 通常指组件内部的状态, 可以通过 `this.setState` 进行修改, 不能通过 `this.state = xxx` 的方式修改, 即便是修改之后的结果是对的,但并不能重新对组件进行更新
+- `props`: 通常指的是来自上层组件中的数据, 数据流是从上向下传递的, 不能通过 `this.props = xxx` 的方式进行修改
+
+[react props vs state](https://github.com/uberVU/react-guide/blob/master/props-vs-state.md)
+
+---
+
+### 事件机制?
+
+---
+
+### `this` 指向 ?
+
+通过三种方式来正确修正 `this` 指向问题, 首先知道在`class`组件中对 `button` 添加了 `click` 事件, 此时的 `this`指向的是 `button` 本身, 如果调用 `this.setState` 等方法会报错,
+
+- `constructor`: 通过 `this.handler = this.handler.bind(this)`, 但如果组件中有太多的函数需要操作时, 开发及维护起来比较麻烦, 但好处是无论组件渲染多少次函数永远都是那个函数
+- `Arrow Function`: `hander = () => {}`, 这里涉及到箭头函数在运行时将 `this`指向到当前执行上下文中
+- 通过在向下传递或直接作用域 `DOM` 节点上使用 `bind`, 缺点: 每次组件进行更新时都会引用一个函数的副本(也就是每次的函数都不相同, 在性能上有损失)
+- 在传递的地方通过箭头函数进行绑定
+
+[传递函数到子组件](https://zh-hans.reactjs.org/docs/faq-functions.html)
+
+---
+
+### `setState` 和 `useState` ?
+
+一直有一个疑问, 知道 `setState` 是异步, 那么 `useState` 的 `set` 函数呢, 是同步还是异步 ?
+
+- `useState`中的 `set` 并不会进行调和而是直接覆盖了原值
+- `setState`: 出现多个 `setState` 时将会把调和计算的值作为最终的值, 需要注意以下几点
+  - 不能直接通过 `this.state = xxx` 的方式修改, 不会重新渲染组件
+  - `setState` 可能是异步操作, 在使用时不能直接 `this.setState({ value: this.state.value + 1 })`操作, 通过 `setState` 的回调方式 `this.setState(prevState => ({ value: prevState.value + 1 }))`
+  - 多个 `setState` 被执行时将会被合并之后才会进行修改数据, 所以尽可能减少相互之间的依赖性
+
+注: `setState`: 可以通过两种方式修改数据 且可接受第二个参数回调函数, 无论是哪种方式在修改后都可以调用回调函数获取到最新的值, 同时会先执行 `componentDidUpdate` 周期
+
+- 对象形式: 不能直接依赖 `state`进行修改新数据, 异步执行不能保证是最新的数据
+- 函数形式: 每次 `setState` 之后都会将最新更新的数据保存在函数的参数中,
+
+```typescript
+this.setState({ count: 1 }, () => {
+  // 可获取最新的 state
+});
+
+this.setState(
+  (prevState) => ({
+    count: prevState.count + 1,
+  }),
+  () => {
+    // 可获取到最新的 state
+  },
+);
+```
+
+---
+
+### 多次 `setState` 之后会 `render` 几次 为什么 ?
+
+只会重新`render`一次, 多次`setState` 会被合并为一次 `render`, 因为 `setState` 并不会立即更新值, 而是放入了一个任务队里中, 最终将多个 `setState` 合并一次性更新页面
+
+### 组件之间的通信 ?
+
+大致可以分为以下几种通信规则
+
+- 父子通信: 直接在子组件通过添加`属性`将父组件中的数据传递给子组件, 在子组件中通过 `props`进行接收同时可以在子组件中通过父组件传递的比如回调函数进而修改在父组件中的数据, 而不能直接修改`props`的值
+- 兄弟通信: 常规做法是将需要通信的数据统一在共同的父组件中进行维护,分别以父子通信的方式进行通信
+- 隔代通信: 可以使用 `props` 一层一层的传递(但比较麻烦), 使用 `context` 进行传递, 但同时将会损耗一定的性能
+
+### Hooks 的理解 及注意事项 ?
+
+只能用于 `Function` 组件中, `useState` `useEffect` `useReducer`(不常用)
+
+不能在判断逻辑中定义,比如以下为错误
+
+```typescript
+if (bol) {
+  const [state, setState] = useState(0);
+}
+```
+
+**包含依赖项的 Hooks**
+
+`useEffect` `useMemo` `useCallback` `useLayoutEffect`: 都是通过浅比较进行更新的, 所以如果依赖项是引用类型时需要注意
+
+**可以优化的手段**
+
+`useMemo`: 将返回一个通过计算后的值, 只有在依赖项中的值有变化时才会重新计算
+`useCallback`: 返回一个计算后的函数, 同样只有在依赖项中值变化后才会计算
+
+---
+
+### 获取上一次的值 ?
+
+如果在 `useEffect` 中没有依赖项时,每次数据更新时都会导致更新, 利用这个特性结合 `ref` 进行缓存最新的值 `props` 或 `state`
+
+```typescript
+const usePrevious = <T = any>(state: T) => {
+  const ref = useRef<T>();
+  useEffect(() => {
+    ref.current = state;
+  });
+
+  return ref.current;
+};
+```
+
+### useEffect 和 useLayoutEffect 的区别 ?
+
+区别在于:
+
+`useEffect`:
+`useLayoutEffect`: 在所有的 DOM 变更之后同步调用 `effect`。可以使用它来读取 `DOM` 布局并同步触发重渲染。在浏览器执行绘制之前，`useLayoutEffect` 内部的更新计划将被同步刷新。
+
+---
+
+### 如何在 useEffect 中使用 async ?
+
+```typescript
+useEffect(() => {
+  async function queryData() {
+    // ....code
+  }
+
+  queryData();
+}, []);
+```
+
+### 受控组件 ?
+
+受控组件: 表单元素的值由 `React` 控制为受控
+不受控组件: 表单元素的值不通过 `React` 改变而是通过外部可以改变的组件
+
+---
+
+### 如何理解 HOC ?
+
+全称 `Higher Order Component`, 将组件作为参数传递给函数, 定义一些较为通用的逻辑操作, 最后将一个新组件返回, 更高效的复用逻辑代码
+最常见的比如: `Redux` 中的 `connect`, `React Router` 中的 `withRouter`
+
+---
+
+### 有哪些优化方式 以及使用技巧?
+
+- 合理的使用 `context`: 因为在 `context` 包裹的子组件中都会受到 `value` 值的影响, [其他优化参考](https://github.com/facebook/react/issues/15156#issuecomment-474590693)
+- 在函数组件中 可使用 `useCallback` 和 `useMemo`
+- 合理使用 `React.memo`包裹子组件
+- 一般情况下 `class` 组件不需要使用 `shouldComponentUpdate` , 除非能够明确保证使用后的效果就是想要的效果
+- 在适当情况下将 `Component` 替换为 `PureComponent`
+
+### 虚拟 DOM 和 diff 算法 ?
+
+---
+
+### 为什么需要使用 key ?
+
+在 React 中会通过 `key` 来记录或者说标记组件,
+能够更高效的识别出变化的组件, 如果没有传递默认会使用下标, 不允许使用
+`Math.random` 等类似的随机值作为 `key` 值, 合理的设置
+`key`值也是可以帮助进行优化, 计算量超大
+
+---
+
+### super(props) ?
+
+其实这并不是单纯的在`React` 中, 在所有继承 `class` 的操作中都需要调用 `super`(即:调用父类中的属性和方法), 否则无法使用 `this`
+
+## 其他
+
+- **[Top 50 React Interview Questions You Must Prepare In 2021](https://www.edureka.co/blog/interview-questions/react-interview-questions/)**

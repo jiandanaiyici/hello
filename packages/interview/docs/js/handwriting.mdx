@@ -1,0 +1,321 @@
+---
+id: handwriting
+title: 该撕的基础
+---
+
+### 深拷贝
+
+[查看](../../blog/clone-deep)
+
+### Promise
+
+[详情查看](../../blog/nzpromise)
+[异步](./async)
+
+---
+
+### 防抖 & 节流
+
+**防抖: 无论连续触发多少次函数调用, 都将会在最后一次函数调用的延迟时间之后执行, 怎么理解? 假设设置延迟 1s 之后执行 点击按钮的回调函数, 无论点击多少次都会在最后一次点击之后的 1s 后才会执行**
+
+- 通过 `setTimeout`机制
+- 接收第一个参数为执行函数, 第二个参数为延迟时间
+
+```ts
+// 第一版: 问题在于点击多少次都会在最后一次之后进行触发所有, 因为只是设置了 setTimeout 但并没有清除定时器
+function debounce(fn, delay) {
+  return function () {
+    setTimeout(() => {
+      fn();
+    }, delay);
+  };
+}
+
+// 第二版: 缺少了 this 绑定 以及参数丢失
+function debounce(fn, delay) {
+  // 这里需要通过闭包的概念来设置 timer 的值, 无论触发多少次, 但是 timer 只有一个
+  let timer = null;
+  return function () {
+    // 说明还在执行中
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+
+    timer = setTimeout(() => {
+      fn();
+    }, delay);
+  };
+}
+
+/** 第三版: 解决了 this 参数 以及延迟时间 */
+function debounce(fn, delay) {
+  let timer = null;
+  // 返回的 函数直接调用时的 This 通过默认规则指向了 window
+  return function () {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    const context = this;
+    const args = arguments;
+
+    timer = setTimeout(() => {
+      // 通过 apply 显示绑定方式将 this 执行重新进行绑定
+      fn.apply(context, args);
+    }, delay);
+  };
+}
+
+/** 第四版: 如果需要根据第三个参数判断 执行过后*/
+
+/** 第五版: 返回值 */
+
+/** 第六版 手动取消 */
+
+/** 同样是异步执行 既然如此, 是不是可以使用 Promise 完成 */
+```
+
+import Debounce from '@theme/Debounce';
+
+<Debounce />
+
+**参考**
+
+- [可视化节流和防抖](http://demo.nimius.net/debounce_throttle/)
+
+### call & apply & bind
+
+**共同点**
+
+- 都可以改变 `this` 的指向, 接收第一个参数为修改的 `this`指向, 如果传入 `null` 或者 `undefined` 会被指向为全局对象 `window`
+
+**不同点**
+
+- `bind`: 绑定之后创建了一个原函数的副本为新函数, 之后的为参数
+- `call`: 设置修改了 `this`, 之后的参数以逗号分隔形式传入函数中调用
+- `apply`: 设置修改 `this` 之后的第二个参数为数组形式传递给函数中调用
+
+**参考**
+
+- [Understanding JavaScript Bind](https://www.smashingmagazine.com/2014/01/understanding-javascript-function-prototype-bind/)
+
+---
+
+### 实现 instaceof
+
+基于以上的几个特点可以尝试实现以下 instaceof 的功能
+
+```typescript
+function myInstanceof(left, right) {
+  if (
+    left === null ||
+    left === undefined ||
+    right === null ||
+    right === undefined
+  ) {
+    throw new Error('left and right must be not null or undefined');
+  }
+  let leftProto = left.__proto__;
+  const rightPrototype = right.prototype;
+
+  while (true) {
+    if (leftProto === null) {
+      return false;
+    }
+
+    if (leftProto === rightPrototype) {
+      return true;
+    }
+
+    leftProto = leftProto.__proto__;
+  }
+}
+```
+
+---
+
+### Ajax
+
+---
+
+### 实现类继承
+
+**参考**
+
+- [谈谈继承](https://www.yuque.com/docs/share/365a13ba-d067-4a0b-a651-6c98c1cfa46a?#《谈谈继承》)
+
+---
+
+### 驼峰互转
+
+驼峰转下划线, 下划线转驼峰
+
+```typescript
+const str = 'update_version'; // updateVersion
+function toHump(data) {
+  return data.replace(/(\_\w)/g, (match, p1, p2) =>
+    match.charAt(1).toUpperCase(),
+  );
+}
+
+function toHumpOne(data) {
+  return data
+    .split('_')
+    .map((item, index) =>
+      index === 0 ? item : item.charAt(0).toUpperCase().concat(item.slice(1)),
+    )
+    .join('');
+}
+
+// 循环
+function toHumpTwo(data) {
+  const result = [];
+  let index = 0;
+  for (let i = 0, len = data.length; i < len; i++) {
+    if (data[i] === '_') {
+      index = i + 1;
+      continue;
+    }
+    const v = index === i ? data[i].toUpperCase() : data[i];
+    result.push(v);
+  }
+  return result.join('');
+}
+
+function toHumpThree(data) {
+  const result = [];
+  let index = 0;
+  const len = data.length;
+
+  while (index < len) {
+    if (data[index] === '_') {
+      result.push(data[index + 1].toUpperCase());
+      index++;
+    } else {
+      result.push(data[index]);
+    }
+    index++;
+  }
+
+  return result.join('');
+}
+```
+
+**下划线转驼峰**
+
+```typescript
+function toUndeline(data) {
+  return data.replace(/[A-Z]/g, (match) => `_${match.toLowerCase()}`);
+}
+```
+
+---
+
+### 千分位
+
+---
+
+### delay
+
+使用 `Promsie` 实现 `delay`, 有的地方也称 `sleep`, 这里的 `value` 为什么可以这么传, 思考一下 ? 可以参考下 [polyfill](https://developer.mozilla.org/zh-CN/docs/Web/API/WindowOrWorkerGlobalScope/setTimeout#%E5%85%BC%E5%AE%B9%E6%97%A7%E7%8E%AF%E5%A2%83%EF%BC%88polyfill%EF%BC%89) 的实现, 内部使用了 `apply` 实现, 以及定义时的描述, 可接受多个参数, 第一个参数为执行函数, 第二个参数为延迟时间, 之后的参数都是在时间到期后的执行函数的入参
+
+```typescript
+const delay = (ms, value) =>
+  new Promsie((resolve) => setTimeout(resolve, ms, value));
+```
+
+### 对象转 string
+
+你能想到几种方式进行转换, 需要考虑兼容到中文或特殊字符
+
+```typescript
+const obj = {
+  a: '1',
+  b: '2',
+};
+// 期望输出值: a=1&b=2
+function toQueryStringOne(value) {
+  return Object.keys(value)
+    .map((key) => `${key}=${value[key]}`)
+    .join('&');
+}
+
+function toQueryStringTwo(value) {
+  return Object.entries(value)
+    .map((item) => `${item[0]}=${item[1]}`)
+    .join('&');
+}
+
+function toQueryStringThree(value) {
+  const result = [];
+  for (const key in value) {
+    result.push(`${key}=${value[key]}`);
+  }
+
+  return result.join('&');
+}
+
+function toQueryStringFour(value) {
+  return JSON.stringify(value)
+    .replace(/{|}|\"/g, '')
+    .replace(/\:/g, '=')
+    .split(',')
+    .join('&');
+}
+
+function toQueryStringFive(value) {
+  const re = /({|}|\")|(\:)/g;
+  return JSON.stringify(value)
+    .replace(re, (match, p1, p2, p3) => {
+      return match === ':' ? '=' : '';
+    })
+    .split(',')
+    .join('&');
+}
+```
+
+基于以上的进行扩展, 如果对象嵌套对象呢, 貌似使用 `JSON.stringify` 的形式就不行了, 其他的基于 `for` 循环 或者 `map` 的都可以添加判断进行递归
+
+```typescript
+function toQueryStringOneWithObject(value) {
+  const result = [];
+  for (const key in value) {
+    const v =
+      Object.prototype.toString.call(value[key]) === '[object Object]'
+        ? toQueryStringOneWithObject(value[key])
+        : `${key}=${value[key]}`;
+    result.push(v);
+  }
+
+  return result.join('&');
+}
+```
+
+### queryString 转对象
+
+刚好和上边的相反
+
+```typescript
+const str = 'a=1&b=2&c=3';
+
+// 期望输出 { a: 1, b: 2, c: 3 }
+function stringToObject(data) {
+  return (() =>
+    data.split('&').reduce((prev, next) => {
+      const [key, value] = next.split('=');
+      prev[key] = value;
+      return prev;
+    }, {}))();
+}
+```
+
+[其他 死磕 36 个 JS 手写题（搞懂后，提升真的大）](https://juejin.cn/post/6946022649768181774#heading-45)
+
+<!-- https://juejin.cn/post/6844903911686406158#heading-11 -->
+<!-- https://juejin.cn/post/6844904004007247880 -->
+<!-- https://juejin.cn/post/6844903438615052295#heading-3 -->
+<!-- https://segmentfault.com/a/1190000020026378 -->
+<!-- https://www.yuque.com/fe9/interview -->
+<!-- https://www.yuque.com/vee/leetcode -->
+<!-- https://www.yuque.com/cuggz/interview -->

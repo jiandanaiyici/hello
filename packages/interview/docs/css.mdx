@@ -1,0 +1,83 @@
+---
+id: CSS
+title: CSS
+---
+
+### rgba 和 opacity
+
+- rgba: 设置颜色的透明度 `rgba(red green black alpha)`
+- opacity: 作用域元素, 即所有都会受到影响
+
+### 清除浮动
+
+- 父级设置高度 及 设置 `overflow: auto`
+- 父级设置浮动, 影响整体的布局, 会造成另一层浮动问题, 不使用
+- 可在父级中添加伪元素 或者 添加新的子元素 设置: `clear: both;`, 通常都会在 `reset css` 时添加 `class` 设置, 使用时直接使用即可
+
+### 选择器
+
+约定规则: 最好不要在设置样式时嵌套层级过深
+
+- 1. 通用选择器: `*` 不建议使用
+- 2. 标签选择器: 直接使用标签
+- 3. `class`
+- 4. `id`: 优先级低于 `!important`
+- 属性选择器 `[href=""]` 伪元素选择器 `::after ::before` 和 伪类 `:active :focus`
+
+伪类 和 伪元素 选择器可分为多种形式
+
+- [伪类](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-classes): 解释为状态 比如 `a` 标签的 `active` 状态 `input` 的 `:focus` 状态
+- [伪元素](https://developer.mozilla.org/zh-CN/docs/Web/CSS/Pseudo-elements): 元素 使用 `::` 前缀
+
+**伪类**
+
+- `:first-child`: 一组元素中的第一个元素
+- `:last-child`: 一组元素中的最后一个元素
+- `:first-of-type`: 父元素中出现的第一个元素, 区别与 `:first-child`
+- `:last-of-type`: 同上最后一个
+- `nth-of-type(n)`: 指定规则的元素, 比如 `2n` 即指的是第二个 第四个 等, 支持 `even` `odd`
+
+**伪元素**
+
+优先级: `4 > 3 > 2 > 1`
+
+### px rem em vh
+
+- px: 固定的像素单位, 绝对单位
+- rem: 根据文档根节点`html`设置的 `font-size`, 比如 `html`设置的 `font-size: 12px;` 那么 `1rem = 12px`, 相对单位
+- em: 继承自父级的 `font-size`, 比如父级 `font-size: 14px` 那么 `1em = 14px` 相对单位
+- vh: `vh vw` 表示的是视窗的 百分比, 假设 `width: 1000px` 那么 `1vw = 10px`
+
+其他更多[MDN 长度单位](https://developer.mozilla.org/zh-CN/docs/Web/CSS/length)
+
+### reset ?
+
+清除一些标签自带的样式问题, 比如标题标签 `h`系列的 margin `body`自带的 `margin: 8px` 参考[normalize.css](https://necolas.github.io/normalize.css/)
+
+### display: none; 和 visibility: hidden
+
+- `dispaly: none;`: 在文档中完全消失, 不占用任何物理空间
+- `visibility: hidden`: 视觉上消失, 还存在于文档中, 且物理空间 及布局都还存在
+
+### link 和 @import
+
+两者都是可以加载 `css` 外部资源的方式
+
+- `link`: 加载即解析, 不会影响文档解析
+- `@import`: 在文档加载完之后加载解析
+
+### position 的值
+
+`relative absolute sticky fixed static` 及 `z-index` 的设置问题, 常见的问题有在 `ios` 下唤起键盘时 `fixed` 失效
+
+### 居中方式
+
+- `text-align line-height`
+- `flex`
+- `grid`
+
+---
+
+### hack 方法
+
+todo
