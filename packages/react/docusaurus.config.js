@@ -37,7 +37,7 @@ module.exports = {
           label: '文档',
           position: 'left',
         },
-        { to: 'blog', label: '记录', position: 'left' },
+        { to: 'blog', label: '记录', position: 'right' },
         {
           href: 'https://github.com/niexiaofei1988/hello-react',
           label: 'GitHub',
