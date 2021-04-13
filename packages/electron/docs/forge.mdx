@@ -1,0 +1,220 @@
+---
+id: forge
+title: Electron Forge
+slug: /forge
+---
+
+### 描述
+
+Electron Forge 是用于创建，发布和安装现代 Electron 应用程序的完整工具。
+
+## 基础知识
+
+### 初始化项目
+
+[参考](https://www.electronforge.io/)
+
+```bash
+yarn create electron-app my-app
+# or
+npx create-electron-app my-app
+
+cd my-app
+
+# 启动
+
+yarn start
+# or
+npm start
+
+# 构建
+yarn make
+# or
+npm run make
+```
+
+**初始化的 package.json**
+
+```json
+{
+  "name": "forge-app",
+  "productName": "forge-app",
+  "version": "1.0.0",
+  "description": "My Electron application description",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "publish": "electron-forge publish",
+    "lint": "echo \"No linting configured\""
+  },
+  "keywords": [],
+  "author": {
+    "name": "",
+    "email": ""
+  },
+  "license": "MIT",
+  "config": {
+    "forge": {
+      "packagerConfig": {},
+      "makers": [
+        {
+          "name": "@electron-forge/maker-squirrel",
+          "config": {
+            "name": "forge_app"
+          }
+        },
+        {
+          "name": "@electron-forge/maker-zip",
+          "platforms": ["darwin"]
+        },
+        {
+          "name": "@electron-forge/maker-deb",
+          "config": {}
+        },
+        {
+          "name": "@electron-forge/maker-rpm",
+          "config": {}
+        }
+      ]
+    }
+  },
+  "dependencies": {
+    "electron-squirrel-startup": "^1.0.0"
+  },
+  "devDependencies": {
+    "@electron-forge/cli": "^6.0.0-beta.54",
+    "@electron-forge/maker-deb": "^6.0.0-beta.54",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.54",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.54",
+    "@electron-forge/maker-zip": "^6.0.0-beta.54"
+  }
+}
+```
+
+除了可以使用 `package.json` 配置外, 还可以通过 `forge.config.js` 导出进行配置, 比如上边默认配置
+
+```js
+// forge.config.js
+module.exports = {
+  forge: {
+    /** 打包程序配置 */
+    packagerConfig: {},
+    /** 重建配置 */
+    electronRebuildConfig: {},
+    /** 发布平台 */
+    publishers: [],
+    plugins: [],
+    hooks: {},
+    /** 构建标识符 */
+    buildIdentifier: '',
+    /** 分发配置 */
+    makers: [
+      {
+        name: '@electron-forge/maker-squirrel',
+        config: {
+          name: 'forge_app',
+        },
+      },
+      {
+        name: '@electron-forge/maker-zip',
+        platforms: ['darwin'],
+      },
+      {
+        name: '@electron-forge/maker-deb',
+        config: {},
+      },
+      {
+        name: '@electron-forge/maker-rpm',
+        config: {},
+      },
+    ],
+  },
+};
+```
+
+- [packagerConfig](https://electron.github.io/electron-packager/master/interfaces/electronpackager.options.html#dir): 打包配置
+- [electronRebuildConfig](https://github.com/electron/electron-rebuild): 重建配置
+- [markers](https://www.electronforge.io/config/makers): 分发内容配置
+- [publishers](https://www.electronforge.io/config/publishers): 发布平台配置
+- [plugins](https://www.electronforge.io/advanced/extending-electron-forge/writing-plugins): 如何写插件
+- [Hooks](https://www.electronforge.io/configuration#hooks): 打包钩子, 包含有以下
+  - `generateAssets`: 启动或运行之前, 处理不在源代码中的一些静态文件或资源
+  - `postStart`: 启动程序之后
+  - `prePackage`: `package` 运行前
+  - `packageAfterCopy`: `copy` 文件之后
+  - [`packageAfterPrune`](https://electron.github.io/electron-packager/master/interfaces/electronpackager.options.html#afterprune): `nodejs`模块
+  - [packageAfterExtract](https://electron.github.io/electron-packager/master/interfaces/electronpackager.options.html#afterextract):
+  - [postPackage](https://www.electronforge.io/configuration#postpackage): 完成打包之后
+    - platform: 应用构建对应平台
+    - arch: 目标体系理解为是 32 或 64
+    - outputPaths: 路径数组, 通常只有一个
+    - spinner: if defined, the ora
+  - [premake](https://www.electronforge.io/configuration#postmake): 分发应用前
+  - [postMake](https://www.electronforge.io/configuration#postmake): 分发应用后, 会包含一个 [MakeResult](https://js.electronforge.io/utils/types/interfaces/forgemakeresult)
+  - [readPackageJson](https://www.electronforge.io/configuration#readpackagejson): 每次尝试读取 `package.json` 时都会执行
+- [buildIdentifier](https://www.electronforge.io/configuration#build-identifier): 分发不同的版本对应不同的标识符, 比如 beta 或 prod
+
+对应的需要修改 `package.json` 中 `config`字段
+
+```json
+"config": "./forge.config.js"
+```
+
+### 导入已有项目
+
+[参考](https://www.electronforge.io/import-existing-project): 导入一个现有的项目是非常简单的
+
+```bash
+cd my-app
+yarn add --dev @electron-forge/cli
+yarn electron-forge import
+
+# or npm
+
+cd my-app
+npm install --save-dev @electron-forge/cli
+npx electron-forge import
+```
+
+### CLI
+
+[命令行执行](https://www.electronforge.io/cli): 在 `package.json` 中直接覆盖执行
+
+---
+
+## 初始化模板
+
+### TypeScript
+
+[初始化 TS 模板](https://www.electronforge.io/templates/typescript-template)
+
+```bash
+yarn create electron-app my-new-app --template=typescript
+# or
+npx create-electron-app my-new-app --template=typescript
+```
+
+和普通模式基本类似, 只是将原来的 `main.js` 修改为了 `main.ts`, 增加了 `tsconfig` 及使用 `tsc` 进行解析 `ts` 文件
+
+### TypeScript + Webpack
+
+[TypeScript + Webpack](https://www.electronforge.io/templates/typescript-+-webpack-template)
+
+```bash
+yarn create electron-app my-new-app --template=typescript-webpack
+
+# or
+npx create-electron-app my-new-app --template=typescript-webpack
+```
+
+### Webpack
+
+[Webpack](https://www.electronforge.io/templates/webpack-template): 既然可以通过 `webpack` 进行初始化, 那么就可以使用 `webpack`的一系列`loader` 和 `plugins` 结合了
+
+```bash
+yarn create electron-app my-new-app --template=typescript-webpack
+# or
+npx create-electron-app my-new-app --template=typescript-webpack
+```

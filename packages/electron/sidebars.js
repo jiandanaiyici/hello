@@ -1,3 +1,3 @@
 module.exports = {
-  docs: ['getting-started', 'build'],
+  docs: ['getting-started', 'build', 'forge', 'resource'],
 };

@@ -1,6 +1,6 @@
 ---
 id: build
-title: 打包
+title: Electron Builder
 slug: /build
 ---
 
@@ -12,9 +12,7 @@ slug: /build
 
 **暂未完整打包为 dmg, 第一次成功 之后因代码签名未配置成功 导致**
 
-
-[公正你的电子申请, 代码签名](https://kilianvalkhof.com/2019/electron/notarizing-your-electron-application/)
----
+## [公正你的电子申请, 代码签名](https://kilianvalkhof.com/2019/electron/notarizing-your-electron-application/)
 
 ## electron-builder
 
@@ -46,24 +44,30 @@ yarn add toml --dev
 
 大多数的配置都接受 `null`
 
-```json
+```js
 "build": {
   "appId": "com.electron.${name}",
+  "productName": "指定产品名, 不允许有空格和特殊字符",
+  /** 是否使用 Electron 存档格式, 将源代码打包到程序中 */
   "asar": true,
   "files": ["**/*", "打包出的文件"],
-  "output": "打包输出目录, 默认dist",
+  /** 打包输出目录, 默认 dist*/
+  "output": "dist",
+  /** 发行版权 */
   "copyright": "Copyright © year ${author} 应用版权",
+  /** 测试构建是否开启压缩 *;
   "compression": "normal | store | maximum(是否开启压缩)",
   /** 以下各个系统中的配置可覆盖共用配置 */
   "mac": {  // mac 系统配置
     "category": "public.app-category.productivity",
+    /** 默认图标 */
+    "icon": "build/icon.icns",
   },
   "dmg": {},    //  DmgOptions
   "pkg": {},    // PkgOptions
   "linux": {},  // linux 配置
   "win": {},    // windows 配置
 }
-
 ```
 
 - [mac.category](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/LaunchServicesKeys.html#//apple_ref/doc/uid/TP40009250-SW8): 更多关于 `MAC category`

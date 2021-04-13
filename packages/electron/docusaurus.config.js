@@ -29,12 +29,7 @@ module.exports = {
           label: '文档',
           position: 'left',
         },
-        // {to: 'blog', label: 'Blog', position: 'left'},
-        {
-          href: 'https://nz-electron.surge.sh/',
-          label: 'Live',
-          position: 'right',
-        },
+        { to: 'blog', label: '博客', position: 'left' },
         {
           href: 'https://github.com/jiandanaiyici/nz-electron',
           label: 'GitHub',
