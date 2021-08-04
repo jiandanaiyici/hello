@@ -24,7 +24,7 @@
     "surge:interview": "cd packages/interview && npm run surge",
     "surge:vue": "cd packages/vue && npm run surge",
     "surge:chart": "cd packages/chart && npm run surge",
-    "surge:chart-preview": "cd examples/chart && npm run surge",
+    "surge:chart-preview": "cd examples/charts && npm run surge",
     "surge:css": "cd packages/css && npm run surge",
     "example:css": "cd examples/webpack/css && npm run start",
     "example:vue": "cd examples/webpack/vue && npm run start",
