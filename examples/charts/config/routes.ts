@@ -1,9 +1,14 @@
 export default [
   {
+    path: '/',
+    redirect: '/welcome',
+  },
+  {
     path: '/welcome',
     name: 'welcome',
     icon: 'smile',
     component: './Welcome',
+    hideInMenu: true
   },
   {
     path: '/antv',
@@ -27,55 +32,24 @@ export default [
           },
         ],
       },
-    ],
-  },
-  {
-    path: '/expand',
-    name: 'expand',
-    icon: 'expandAlt',
-    routes: [
       {
-        path: 'dropdown',
-        name: 'dropdown',
-        icon: 'downOut',
-        component: './expand/ExpandDropdown/Demo',
-      },
-      {
-        path: 'label-fitler',
-        name: 'label-filter',
-        icon: 'downOut',
-        component: './expand/LabelFilter/Demo',
-      },
-      {
-        path: 'tree-fitler',
-        name: 'tree-filter',
-        icon: 'downOut',
-        component: './expand/TreeFilter/Demo',
-      },
-      {
-        path: 'animates',
-        name: 'animates',
-        icon: 'downOut',
-        component: './expand/animates/Demo',
+        path: 'g2-plot',
+        name: 'g2plot',
+        icon: 'smile',
+        routes: [{
+          path: 'doubley',
+          name: 'doubley',
+          icon: 'smile',
+          component: './antv/g2plot/DoubleYChart'
+        }]
       },
     ],
   },
   {
-    path: '/d3',
-    name: 'd3',
-    icon: 'crown',
-    routes: [
-      {
-        path: 'basic',
-        name: 'basic',
-        component: './d3/basic',
-      },
-      {
-        path: 'dagre',
-        name: 'dagre',
-        component: './d3/dagre',
-      },
-    ],
+    path: 'bpmn',
+    name: 'bpmn',
+    icon: 'smile',
+    component: './Bpmn',
   },
   {
     path: '/dom',
@@ -89,6 +63,54 @@ export default [
       },
     ],
   },
+  // {
+  //   path: '/expand',
+  //   name: 'expand',
+  //   icon: 'expandAlt',
+  //   routes: [
+  //     {
+  //       path: 'dropdown',
+  //       name: 'dropdown',
+  //       icon: 'downOut',
+  //       component: './expand/ExpandDropdown/Demo',
+  //     },
+  //     {
+  //       path: 'label-fitler',
+  //       name: 'label-filter',
+  //       icon: 'downOut',
+  //       component: './expand/LabelFilter/Demo',
+  //     },
+  //     {
+  //       path: 'tree-fitler',
+  //       name: 'tree-filter',
+  //       icon: 'downOut',
+  //       component: './expand/TreeFilter/Demo',
+  //     },
+  //     {
+  //       path: 'animates',
+  //       name: 'animates',
+  //       icon: 'downOut',
+  //       component: './expand/animates/Demo',
+  //     },
+  //   ],
+  // },
+  // {
+  //   path: '/d3',
+  //   name: 'd3',
+  //   icon: 'crown',
+  //   routes: [
+  //     {
+  //       path: 'basic',
+  //       name: 'basic',
+  //       component: './d3/basic',
+  //     },
+  //     {
+  //       path: 'dagre',
+  //       name: 'dagre',
+  //       component: './d3/dagre',
+  //     },
+  //   ],
+  // },
   // {
   //   path: '/admin',
   //   hideInMenu: true,
@@ -105,10 +127,7 @@ export default [
   //     },
   //   ],
   // },
-  {
-    path: '/',
-    redirect: '/welcome',
-  },
+
   {
     component: './404',
   },

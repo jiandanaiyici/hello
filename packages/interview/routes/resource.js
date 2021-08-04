@@ -1,3 +1,3 @@
 module.exports = {
-  resource: ['index', 'interview', 'sourcecode', 'video', 'api'],
+  resource: ['index', 'interview', 'sourcecode', 'video', 'api', 'tools'],
 };

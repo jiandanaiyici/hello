@@ -24,8 +24,6 @@ npm test
 ## 文档
 
 ```bash
-cd website
-
 yarn
 
 yarn start

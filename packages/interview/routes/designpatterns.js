@@ -1,3 +1,3 @@
 module.exports = {
-  datastructure: ['resource'],
+  datastructure: ['resource', 'Singleton', 'publish'],
 };

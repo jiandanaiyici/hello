@@ -38,6 +38,7 @@ lerna-debug.log*
 /src/.umi-production
 /src/.umi-test
 /.env.local
+*/.umi
 
 # editor
 .vscode

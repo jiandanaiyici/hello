@@ -1,9 +1,12 @@
 export default {
   'menu.welcome': '欢迎',
   'menu.antv': 'Antv',
-  'menu.antv.l7': '地理空间',
+  'menu.antv.l7': 'L7',
   'menu.antv.l7.basic-heat': '基础热力图',
   'menu.antv.l7.react-heat': 'React版热力图',
+  'menu.antv.g2plot': 'G2 Plot',
+  'menu.antv.g2plot.doubley': '双Y轴折线图',
+  'menu.bpmn': 'BPMN',
   'menu.expand': '扩展插件',
   'menu.expand.dropdown': '自定义Dropdown',
   'menu.expand.label-filter': 'LabelFilter',

@@ -46,6 +46,7 @@
     "not ie <= 10"
   ],
   "dependencies": {
+    "@ant-design/charts": "^1.2.5",
     "@ant-design/icons": "^4.2.2",
     "@ant-design/pro-layout": "^6.2.5",
     "@ant-design/pro-table": "^2.4.0",
@@ -56,6 +57,9 @@
     "@types/resize-observer-browser": "^0.1.4",
     "ahooks": "^2.4.0",
     "antd": "^4.4.0",
+    "bpmn-js": "^8.7.1",
+    "bpmn-js-properties-panel": "^0.44.0",
+    "camunda-bpmn-moddle": "^5.1.2",
     "classnames": "^2.2.6",
     "lodash": "^4.17.11",
     "moment": "^2.25.3",

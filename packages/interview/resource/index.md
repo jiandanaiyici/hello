@@ -24,6 +24,8 @@ id: index
 - [免费在线书籍](http://www.freebookcentre.net/): 包含指向数千本免费在线技术书籍的链接。其中包括核心计算机科学，网络，编程语言，系统编程书籍，Linux 书籍等等
 - [搬书匠](http://www.banshujiang.cn/): 搬别人的书
 - [其他下载书籍](https://www.yuque.com/docs/share/8b3f5677-1d52-4d22-a27f-b688c2aa0d6a?#《Git》): 包含 `git` `权威系列` 和 `你不知道的JS系列`
+- [前端开发常用文档/网站地址](https://github.com/MichealWayne/fe-tools)
+- [Frontend Book](https://github.com/lulu27753/Frontend-Book): 高质量前端电子书
 
 ---
 
