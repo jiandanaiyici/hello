@@ -40,7 +40,7 @@ module.exports = {
         },
         { to: 'blog', label: '记录', position: 'right' },
         {
-          href: 'https://github.com/niexiaofei1988/hello-react',
+          href: 'https://github.com/jiandanaiyici/hello/tree/main/packages/react',
           label: 'GitHub',
           position: 'right',
         },

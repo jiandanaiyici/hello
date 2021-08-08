@@ -25,7 +25,7 @@ function Home() {
                 'button button--outline button--secondary button--lg',
                 styles.getStarted,
               )}
-              to={useBaseUrl('docs/overview')}
+              to={useBaseUrl('blog/higher-order-component')}
             >
               开始
             </Link>

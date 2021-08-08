@@ -29,3 +29,15 @@ $ GIT_USER=<Your GitHub username> USE_SSH=true yarn deploy
 ```
 
 <!-- If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch. -->
+
+### 部署报错
+
+- [Minify failure when building docusaurus site in a yarn workspaces with another project #3515](https://github.com/facebook/docusaurus/issues/3515)
+
+node: 14.10
+
+```json
+  "@docusaurus/core": "^2.0.0-alpha.61",
+  "@docusaurus/preset-classic": "^2.0.0-alpha.61",
+  "@docusaurus/theme-live-codeblock": "^2.0.0-alpha.39"
+```
