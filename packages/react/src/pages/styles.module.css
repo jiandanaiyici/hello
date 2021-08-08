@@ -5,6 +5,9 @@
  * and scoped locally.
  */
 
+ .container {
+   background-color: #fff !important;
+ }
 .heroBanner {
   padding: 4rem 0;
   text-align: center;

@@ -16,6 +16,7 @@ module.exports = {
   projectName: 'hello-react',
   themes: ['@docusaurus/theme-live-codeblock'],
   // scripts: ['https://cdnjs.cloudflare.com/ajax/libs/screenfull.js/5.0.2/screenfull.min.js'],
+  stylesheets: ['https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css'],
   themeConfig: {
     hideOnScroll: true,
     colorMode: {
