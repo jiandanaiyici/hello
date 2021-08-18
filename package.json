@@ -35,7 +35,9 @@
     "example:charts": "cd examples/charts && npm run start"
   },
   "devDependencies": {
+    "@types/mockjs": "^1.0.4",
     "lerna": "^3.22.1",
+    "mockjs": "^1.1.0",
     "npm-run-all": "^4.1.5"
   }
 }
