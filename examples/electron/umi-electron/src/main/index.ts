@@ -1,4 +1,4 @@
-import { app, BrowserWindow, webFrameMain, protocol } from 'electron';
+import { app, BrowserWindow, protocol } from 'electron';
 import createProtocol from 'umi-plugin-electron-builder/lib/createProtocol';
 import path from 'path';
 // import installExtension, {
@@ -13,7 +13,7 @@ protocol.registerSchemesAsPrivileged([
   { scheme: 'app', privileges: { secure: true, standard: true } },
 ]);
 
-function createWindow() {
+function createWindow(url: string) {
   mainWindow = new BrowserWindow({
     width: 1280,
     height: 800,
@@ -22,9 +22,10 @@ function createWindow() {
     webPreferences: {
       webviewTag: true,
       nodeIntegration: true,
-      contextIsolation: false,
+      contextIsolation: true,
       enableRemoteModule: true,
       nodeIntegrationInWorker: true,
+      webSecurity: true,
       nodeIntegrationInSubFrames: true,
       // sandbox: true,
       /** 子模块 */
@@ -38,20 +39,20 @@ function createWindow() {
   });
 
   if (isDevelopment) {
-    mainWindow.loadURL('http://localhost:8000');
-    mainWindow.webContents.on(
-      'did-frame-navigate',
-      (event, url, httpResponseCode, isMainFrame, frameProcessId, frameRoutingId) => {
-        // console.log(url, isMainFrame, frameProcessId, frameRoutingId, 'isMainFrame>>>>>>>')
-        const frame = webFrameMain.fromId(frameRoutingId, frameRoutingId);
+    // mainWindow.loadURL('http://localhost:8000');
+    mainWindow.loadURL(url);
+    // mainWindow.webContents.on(
+    //   'did-frame-navigate',
+    //   (event, url, httpResponseCode, isMainFrame, frameProcessId, frameRoutingId) => {
+    //     // console.log(url, isMainFrame, frameProcessId, frameRoutingId, 'isMainFrame>>>>>>>')
+    //     const frame = webFrameMain.fromId(frameRoutingId, frameRoutingId);
 
-        if (frame) {
-        const code = 'window.a=1'
-        frame.executeJavaScript(code)
-        }
-      }
-    )
-    // mainWindow.loadURL('https://twitter.com')
+    //     if (frame) {
+    //     const code = 'window.a=1'
+    //     frame.executeJavaScript(code)
+    //     }
+    //   }
+    // )
     mainWindow.webContents.openDevTools({ mode: 'right' });
     /** 设置顶层窗口 */
     // mainWindow.setAlwaysOnTop(true);
@@ -62,13 +63,35 @@ function createWindow() {
   }
 }
 
-console.log(app.commandLine.hasSwitch('webview-tag'), '>>>>>>>>>>>.webview-tag')
+/** 打开新窗口查看 electron-tabs 实现效果 */
+function createTabWindow() {
+  const tabWin = new BrowserWindow({
+    width: 300,
+    height: 200,
+    title: 'Electron-Tab 及 webview 实现',
+    webPreferences: {
+      nodeIntegration: true,
+      webviewTag: true,
+      contextIsolation: false,
+    }
+  });
+
+  tabWin.on('ready-to-show', () => {
+    tabWin.show();
+    tabWin.focus();
+  });
+
+  tabWin.webContents.loadURL('');
+}
+
+// console.log(app.commandLine.hasSwitch('webview-tag'), '>>>>>>>>>>>.webview-tag')
 
 app.on('ready', async () => {
   // if (isDevelopment) {
   //   await installExtension(REACT_DEVELOPER_TOOLS);
   // }
-  createWindow();
+  createWindow('http://localhost:8000');
+  createWindow('http://localhost:8000/#/electron-tabs');
 });
 
 app.on('window-all-closed', () => {
@@ -77,8 +100,9 @@ app.on('window-all-closed', () => {
   }
 });
 
+// 添加单个窗口锁
 app.on('activate', () => {
   if (mainWindow === null) {
-    createWindow();
+    createWindow('http://localhost:8000');
   }
 });
