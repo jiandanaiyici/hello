@@ -4,7 +4,8 @@ import path from 'path';
 // import installExtension, {
 //   REACT_DEVELOPER_TOOLS,
 // } from 'electron-devtools-installer';
-import './menu/context-menu';
+// import './menu';
+import './communication';
 
 const isDevelopment = process.env.NODE_ENV === 'development';
 let mainWindow: BrowserWindow;
@@ -63,27 +64,6 @@ function createWindow(url: string) {
   }
 }
 
-/** 打开新窗口查看 electron-tabs 实现效果 */
-function createTabWindow() {
-  const tabWin = new BrowserWindow({
-    width: 300,
-    height: 200,
-    title: 'Electron-Tab 及 webview 实现',
-    webPreferences: {
-      nodeIntegration: true,
-      webviewTag: true,
-      contextIsolation: false,
-    }
-  });
-
-  tabWin.on('ready-to-show', () => {
-    tabWin.show();
-    tabWin.focus();
-  });
-
-  tabWin.webContents.loadURL('');
-}
-
 // console.log(app.commandLine.hasSwitch('webview-tag'), '>>>>>>>>>>>.webview-tag')
 
 app.on('ready', async () => {
@@ -91,8 +71,24 @@ app.on('ready', async () => {
   //   await installExtension(REACT_DEVELOPER_TOOLS);
   // }
   createWindow('http://localhost:8000');
-  createWindow('http://localhost:8000/#/electron-tabs');
+  // createWindow('http://localhost:8000/#/electron-tabs');
 });
+
+// const gotTheLock = app.requestSingleInstanceLock();
+
+// if (!gotTheLock) {
+//   app.quit();
+// } else {
+//   app.on('second-instance', () => {
+//     if (mainWindow) {
+//       if (mainWindow.isMinimized()) {
+//         mainWindow.restore();
+//       } else {
+//         mainWindow.focus();
+//       }
+//     }
+//   });
+// }
 
 app.on('window-all-closed', () => {
   if (process.platform !== 'darwin') {
@@ -101,8 +97,8 @@ app.on('window-all-closed', () => {
 });
 
 // 添加单个窗口锁
-app.on('activate', () => {
-  if (mainWindow === null) {
-    createWindow('http://localhost:8000');
-  }
-});
+// app.on('activate', () => {
+//   if (mainWindow === null) {
+//     createWindow('http://localhost:8000');
+//   }
+// });

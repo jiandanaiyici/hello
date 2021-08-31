@@ -8,3 +8,12 @@ declare module '*.svg' {
   const url: string;
   export default url;
 }
+
+interface ElectronBridgeApi {
+  ipcRenderer: Electron.IpcRenderer;
+  versions: NodeJS.ProcessVersions;
+}
+
+declare interface Window {
+  __ELECTRON_BRIDGE__: ElectronBridgeApi;
+}

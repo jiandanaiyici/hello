@@ -12,21 +12,21 @@ import BaseLayout from './base-layout';
 const { Sider } = Layout;
 
 const PageLayout = React.memo((props: any) => {
-  const match = useRouteMatch('/electron-tabs');
+  const tabMatched = !!useRouteMatch('/electron-tabs');
   const [state, setState] = useState(false);
 
   const onCollapse = (collapsed: boolean) => {
     setState(collapsed);
   };
 
-  return !!match ? (
-    <BaseLayout>{props.children}</BaseLayout>
+  return tabMatched ? (
+    <BaseLayout tabMatched={tabMatched}>{props.children}</BaseLayout>
   ) : (
     <Layout style={{ minHeight: '100vh' }} className={styles['layout']}>
       <Sider collapsible collapsed={state} onCollapse={onCollapse}>
         <SiderTree />
       </Sider>
-      <BaseLayout>{props.children}</BaseLayout>
+      <BaseLayout tabMatched={tabMatched}>{props.children}</BaseLayout>
     </Layout>
   );
 });

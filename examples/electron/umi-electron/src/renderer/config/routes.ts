@@ -14,7 +14,7 @@ export default [
       path: '/task/:taskId',
       component: '@/pages/task',
     }, {
-      path: 'electron-tabs',
+      path: '/electron-tabs',
       component: '@/pages/electron-tabs-content'
     }]
   },
