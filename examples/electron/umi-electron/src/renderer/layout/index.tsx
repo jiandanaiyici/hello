@@ -1,5 +1,5 @@
 /** 整体布局 */
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 
 import { Layout } from 'antd';
 import { useRouteMatch } from 'umi';
@@ -19,14 +19,23 @@ const PageLayout = React.memo((props: any) => {
     setState(collapsed);
   };
 
+  const routes = useMemo(() => {
+    return props.route.routes.filter((item: any) => !!item.component || !item.pass);
+  }, [props.route.routes]);
+
+
   return tabMatched ? (
-    <BaseLayout tabMatched={tabMatched}>{props.children}</BaseLayout>
+    <BaseLayout routes={routes} tabMatched={tabMatched}>
+      {props.children}
+    </BaseLayout>
   ) : (
     <Layout style={{ minHeight: '100vh' }} className={styles['layout']}>
       <Sider collapsible collapsed={state} onCollapse={onCollapse}>
         <SiderTree />
       </Sider>
-      <BaseLayout tabMatched={tabMatched}>{props.children}</BaseLayout>
+      <BaseLayout routes={routes} tabMatched={tabMatched}>
+        {props.children}
+      </BaseLayout>
     </Layout>
   );
 });
