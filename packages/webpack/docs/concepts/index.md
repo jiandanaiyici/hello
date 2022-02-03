@@ -58,3 +58,5 @@ module.exports = {
 
 ### 提交记录查看
 - [初始化及零配置构建](https://github.com/jiandanaiyici/hello/commit/17a484fd28176271dcdfdbd866799754399e273e)
+- [手动修改入口配置](https://github.com/jiandanaiyici/hello/commit/a6a4e0b3caef5c40b229947f983320790f2fcb1f)
+- [修改输出配置]()
