@@ -1,0 +1,44 @@
+{
+  "StateCode": 1,
+  "Reason": "成功",
+  "Result": {
+    "data": {
+      "continent": "亚洲",
+      "asnumber": "4847",
+      "areacode": "CN",
+      "country": "中国",
+      "zipcode": "110117",
+      "timezone": "UTC+8",
+      "accuracy": "街道",
+      "owner": "Beijing lian guang tong network technology co., LTD",
+      "isp": "China Networks Inter-Exchange",
+      "source": "地面采集",
+      "correctness": 5,
+      "consistency": 4,
+      "multiAreas": [
+        {
+          "address": "辽宁省辽阳市白塔区衍水大桥",
+          "city": "辽阳市",
+          "district": "白塔区",
+          "lat": "41.282323",
+          "lng": "123.197195",
+          "prov": "辽宁省",
+          "radius": "5.2209"
+        },
+        {
+          "address": "辽宁省沈阳市和平区宁波路4号",
+          "city": "沈阳市",
+          "district": "浑南区",
+          "lat": "41.769901",
+          "lng": "123.402037",
+          "prov": "辽宁省",
+          "radius": "13.6348"
+        }
+      ]
+    },
+    "charge": true,
+    "ip": "59.152.39.141",
+    "coordsys": "WGS84",
+    "area": "multi"
+  }
+}

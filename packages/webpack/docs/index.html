@@ -10,34 +10,39 @@
       content="width=device-width, initial-scale=1.0, minimum-scale=1.0"
     />
     <link
+      href="https://webpack.docschina.org/favicon.f326220248556af65f41.ico"
+      type="image/x-icon"
+      rel="icon"
+    />
+    <link
       rel="stylesheet"
       href="//cdn.jsdelivr.net/npm/docsify@4/lib/themes/vue.css"
     />
     <link
-    rel="stylesheet"
-    href="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.css"
-  />
-  <script src="./assets/js/mermaid.min.js"></script>
+      rel="stylesheet"
+      href="//cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.css"
+    />
+    <script src="./assets/js/mermaid.min.js"></script>
+    <!-- <script src="https://cdn.jsdelivr.net/npm/prismjs@1.26.0/components/prism-typescript.min.js"></script> -->
   </head>
   <body>
     <div id="app">Please wait...</div>
     <script>
       var num = 0;
 
-      console.log(mermaid, 'mermaid>>>>>>>>>>>>>>>')
       window.$docsify = {
-        name: '',
-        repo: '',
+        name: "",
+        repo: "",
         loadSidebar: true,
         subMaxLevel: 2,
         markdown: {
           renderer: {
             code: function (code, lang) {
-              if (lang === 'mermaid') {
+              if (lang === "mermaid") {
                 return (
                   '<div class="mermaid">' +
-                  mermaid.render('mermaid-svg-' + num++, code) +
-                  '</div>'
+                  mermaid.render("mermaid-svg-" + num++, code) +
+                  "</div>"
                 );
               }
               return this.origin.code.apply(this, arguments);
@@ -47,6 +52,8 @@
       };
     </script>
     <!-- Docsify v4 -->
+    <!-- <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/index.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/prismjs@1/components/prism-bash.min.js"></script> -->
     <script src="//cdn.jsdelivr.net/npm/docsify@4"></script>
   </body>
 </html>

@@ -49,10 +49,6 @@
   "directories": {
     "lib": "lib"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/niexiaofei1988/hello-Js.git"
-  },
   "keywords": [],
   "author": "",
   "license": "ISC",

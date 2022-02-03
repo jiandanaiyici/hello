@@ -1,4 +1,4 @@
-```shell
+```bash
 # 指定配置文件
 webpack --config webpack.config.js
 

@@ -1,1 +1,1 @@
-[在线查看](https://nz-webpack.surge.sh/#/)
+[在线查看](https://nz-webpack.surge.sh/)
