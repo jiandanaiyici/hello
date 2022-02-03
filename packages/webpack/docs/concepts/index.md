@@ -55,3 +55,6 @@ module.exports = {
 }
 
 ```
+
+### 提交记录查看
+- [初始化及零配置构建](https://github.com/jiandanaiyici/hello/commit/17a484fd28176271dcdfdbd866799754399e273e)
