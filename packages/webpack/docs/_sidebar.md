@@ -7,7 +7,7 @@
   - [插件plugin](concepts/plugin 'plugin')
   - [模式mode](concepts/mode 'mode')
 - loaders
-  - [css](loaders/css 'css')
+  - [加载css](loaders/css '加载css')
 - [API](/api.md)
 - [配置](/config.md)
 <!-- - 手写

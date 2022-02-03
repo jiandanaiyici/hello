@@ -1,3 +1,5 @@
+import './index.css';
+
 function createList() {
   const element = document.getElementById("ul");
   const fragment = document.createDocumentFragment();
