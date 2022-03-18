@@ -55,3 +55,10 @@ module.exports = {
 }
 
 ```
+
+### 提交记录查看
+- [初始化及零配置构建](https://github.com/jiandanaiyici/hello/commit/17a484fd28176271dcdfdbd866799754399e273e)
+- [手动修改入口配置](https://github.com/jiandanaiyici/hello/commit/a6a4e0b3caef5c40b229947f983320790f2fcb1f)
+- [修改输出配置](https://github.com/jiandanaiyici/hello/commit/223a0b11585ed36288a70991342352bc55bd5a8b)
+- [添加 html-webpack-plugin](https://github.com/jiandanaiyici/hello/commit/47dc8097b4b09a28ed138219349b14f72d84cd46): 根据模板自动生成 html 并自动引入 js 文件
+- [加载 css 文件](https://github.com/jiandanaiyici/hello/commit/5b2a657b3653e64606044b17d373a492e4458751): 配置 [loader 加载 css 文件](loaders/css), 添加 style 到 head 标签中
