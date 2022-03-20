@@ -6,6 +6,7 @@ export default {
   'menu.antv.l7.react-heat': 'React版热力图',
   'menu.antv.g2plot': 'G2 Plot',
   'menu.antv.g2plot.doubley': '双Y轴折线图',
+  'menu.antv.xflow': 'XFlow',
   'menu.bpmn': 'BPMN',
   'menu.expand': '扩展插件',
   'menu.expand.dropdown': '自定义Dropdown',

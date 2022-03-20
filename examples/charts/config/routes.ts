@@ -43,6 +43,12 @@ export default [
           component: './antv/g2plot/DoubleYChart'
         }]
       },
+      {
+        path: 'xflow',
+        name: 'xflow',
+        icon: 'smile',
+        component: './antv/xflow',
+      }
     ],
   },
   {

@@ -22,12 +22,14 @@ const LabelFilter: SFC<LabelFilterProps> = (props) => {
       cs(styles.wrapper, props.className, {
         [styles.opened]: props.opened,
       }),
-    [props.opened, props.className],
+    [props.opened, props.className]
   );
 
   return (
     <span className={kls}>
-      {props.prefixDesc && <span className={styles.prefix}>{props.prefixDesc}</span>}
+      {props.prefixDesc && (
+        <span className={styles.prefix}>{props.prefixDesc}</span>
+      )}
       <div className={styles.value}>{props.content}</div>
       <span className={styles.icon}>
         <DownOutlined />

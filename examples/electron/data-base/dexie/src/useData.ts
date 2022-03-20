@@ -23,7 +23,6 @@ const useData = () => {
       if (db) {
         const tasks = await db.table('tasks').toArray();
         const groups = await db.table('groups').toArray();
-        console.log(tasks, '>>>>>>>>>>>>');
         setState({
           tasks,
           groups,

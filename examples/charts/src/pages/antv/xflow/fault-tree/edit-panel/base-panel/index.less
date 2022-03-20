@@ -1,0 +1,81 @@
+@import "../../var.less";
+
+@edit-panel-prefix: "~@{root-prefix}-edit-panel";
+
+.fault-tree-container {
+  .fault-tree-edit-panel {
+    z-index: 999;
+    color: rgba(0, 0, 0, 0.85);
+    font-size: 12px;
+    transition: right 0.3s, left 0.3s;
+
+    &-wrapper {
+      position: relative;
+      height: 100%;
+      width: 100%;
+      background-color: #fff;
+      display: flex;
+      flex-direction: column;
+    }
+
+    &-body {
+      flex: 100%;
+      overflow: auto;
+      padding: 16px;
+    }
+
+    &-header,
+    &-footer {
+      flex: none;
+      height: 32px;
+    }
+
+    &-header {
+      border-bottom: 1px red solid;
+    }
+
+    &-footer {
+      border-top: 1px red solid;
+    }
+
+    &-icon {
+      position: absolute;
+      z-index: 99;
+      width: 20px;
+      color: #aaa;
+      text-align: center;
+      background: #fff;
+      border: 1px solid #ccc;
+      transform: translate(0, -50%);
+      cursor: pointer;
+      border-radius: 50%;
+      border-right: "";
+      top: 32px;
+      left: -10px;
+
+      &.left {
+        right: -10px;
+        left: auto;
+      }
+
+      &:hover {
+        color: rgb(43, 132, 192);
+      }
+    }
+
+    &-collpased {
+      .fault-tree-edit-panel-icon {
+        left: -20px;
+        border-radius: 50% 0 0 50%;
+        border-right: none;
+
+        &.left {
+          right: -20px;
+          left: auto;
+          border-radius: 0 50% 50% 0;
+          border-left: none;
+        }
+      }
+    }
+  }
+}
