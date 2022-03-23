@@ -1,10 +1,14 @@
 /** 设置画布配置 */
+import React from 'react';
 import { createGraphConfig, IEvent } from '@antv/xflow';
 import type { IModelService, IGraphCommandService } from '@antv/xflow';
 import type { EventArgs } from '@antv/x6/es/graph/events';
 import type { Graph as X6Graph } from '@antv/x6';
+import { EventNode } from '../react-node';
 
 export const useGraphConfig = createGraphConfig((config) => {
+  config.setNodeRender('EventNode', (props) => <EventNode {...props} />);
+
   const nodeClickEvent: IEvent<'node:click'> = {
     eventName: 'node:click',
     callback: (eventArgs, commandService) => {

@@ -85,6 +85,7 @@ namespace FaultTreeToolbarConfig {
         iconName: 'RollbackOutlined',
         tooltip: '上一步(Cmd+z,Ctrl+z)',
         isEnabled: state.undoable,
+        name: 'true',
         onClick: async ({ commandService }) => {
           message.success(`上一步---> ${commandService.isRedoable}`);
           if (state.undoable || commandService.isUndoable) {

@@ -8,6 +8,7 @@ import {
   IApplication,
   CanvasMiniMap,
   XFlowGraphCommands,
+  CanvasContextMenu,
 } from '@antv/xflow';
 import { Graph } from '@antv/x6';
 
@@ -15,7 +16,12 @@ import { getPrefix } from '@/utils';
 
 import { FaultTreeToolbar } from './toolbar';
 import type { XFlowDemoProps } from './types';
-import { useGraphConfig, useKeybindingConfig } from './configs';
+import {
+  useGraphConfig,
+  useCtxMenuConfig,
+  useKeybindingConfig,
+  useCmdConfig,
+} from './configs';
 
 import './index.less';
 
@@ -28,6 +34,8 @@ const FaultTree: React.FC<XFlowDemoProps> = React.memo<XFlowDemoProps>(
     const { minimap, graphData, layoutType } = props;
     const graphConfig = useGraphConfig();
     const keybindingConfig = useKeybindingConfig(props);
+    const ctxMenuConfig = useCtxMenuConfig(props);
+    const cmdConfig = useCmdConfig(props);
 
     const onLoad: IAppLoad = async (app: IApplication) => {
       appInstanceRef.current = await app.getGraphInstance();
@@ -87,11 +95,8 @@ const FaultTree: React.FC<XFlowDemoProps> = React.memo<XFlowDemoProps>(
       <div className={basePrefix}>
         <XFlow
           graphData={graphData}
+          commandConfig={cmdConfig}
           // graphConfig={graphConfig}
-          isAutoCenter
-          onAppDestroy={() => {
-            console.log('销毁');
-          }}
           onLoad={onLoad}
           graphLayout={{
             layoutType,
@@ -108,6 +113,7 @@ const FaultTree: React.FC<XFlowDemoProps> = React.memo<XFlowDemoProps>(
           <FaultTreeToolbar />
           <XFlowCanvas config={graphConfig} />
           {minimap && <CanvasMiniMap />}
+          <CanvasContextMenu config={ctxMenuConfig} />
         </XFlow>
       </div>
     );

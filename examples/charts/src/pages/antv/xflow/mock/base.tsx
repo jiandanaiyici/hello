@@ -28,6 +28,7 @@ export const getGraphData = () => {
     {
       id: 'node1',
       label: '算法节点-1',
+      renderKey: 'EventNode',
       ...NODE_COMMON_PROPS,
     },
     {
