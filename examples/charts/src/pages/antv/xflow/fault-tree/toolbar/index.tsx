@@ -4,14 +4,16 @@ import { useToolbarConfig } from './config';
 
 import './index.less';
 
-// import { getPrefix } from "@/utils";
-
-// const basePrefix = getPrefix("flow-toolbar");
-
 const FaultTreeToolbar = () => {
   const config = useToolbarConfig();
 
-  return <CanvasToolbar layout="horizontal" config={config} position={{}} />;
+  return (
+    <CanvasToolbar
+      layout="horizontal"
+      config={config}
+      position={{ top: 0, left: 0 }}
+    />
+  );
 };
 
 export { FaultTreeToolbar };

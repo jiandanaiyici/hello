@@ -12,8 +12,6 @@ import {
 } from '@antv/xflow';
 import { Graph } from '@antv/x6';
 
-import { getPrefix } from '@/utils';
-
 import { FaultTreeToolbar } from './toolbar';
 import type { XFlowDemoProps } from './types';
 import {
@@ -24,8 +22,6 @@ import {
 } from './configs';
 
 import './index.less';
-
-const basePrefix = getPrefix('container');
 
 const FaultTree: React.FC<XFlowDemoProps> = React.memo<XFlowDemoProps>(
   (props) => {
@@ -92,36 +88,36 @@ const FaultTree: React.FC<XFlowDemoProps> = React.memo<XFlowDemoProps>(
     }, [layoutType, graphData]);
 
     return (
-      <div className={basePrefix}>
-        <XFlow
-          graphData={graphData}
-          commandConfig={cmdConfig}
-          // graphConfig={graphConfig}
-          onLoad={onLoad}
-          graphLayout={{
-            layoutType,
-            layoutOptions: {
-              type: layoutType,
-              rankdir: 'TB',
-              nodesep: 60,
-              ranksep: 40,
-            },
-          }}
-        >
-          {props.children}
-          <KeyBindings config={keybindingConfig} />
-          <FaultTreeToolbar />
-          <XFlowCanvas config={graphConfig} />
-          {minimap && <CanvasMiniMap />}
+      // <div className={basePrefix}>
+      <XFlow
+        graphData={graphData}
+        commandConfig={cmdConfig}
+        onLoad={onLoad}
+        graphLayout={{
+          layoutType,
+          layoutOptions: {
+            type: layoutType,
+            rankdir: 'TB',
+            nodesep: 60,
+            ranksep: 40,
+          },
+        }}
+      >
+        {/* {props.children} */}
+        <FaultTreeToolbar />
+        <KeyBindings config={keybindingConfig} />
+        {minimap && <CanvasMiniMap />}
+        <XFlowCanvas config={graphConfig}>
           <CanvasContextMenu config={ctxMenuConfig} />
-        </XFlow>
-      </div>
+        </XFlowCanvas>
+      </XFlow>
+      // </div>
     );
   }
 );
 
 FaultTree.defaultProps = {
-  minimap: true,
+  minimap: false,
 };
 
 export { FaultTreeEditPanel } from './edit-panel';

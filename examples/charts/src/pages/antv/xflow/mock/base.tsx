@@ -6,7 +6,6 @@ const NODE_COMMON_PROPS = {
   width: 160,
   height: 32,
 } as const;
-// NodeConfig
 const EDGE_COMMON_PROPS = {
   attrs: {
     line: {
