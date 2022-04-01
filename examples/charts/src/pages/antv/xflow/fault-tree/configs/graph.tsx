@@ -4,6 +4,7 @@ import { createGraphConfig, IEvent } from '@antv/xflow';
 import type { IModelService, IGraphCommandService } from '@antv/xflow';
 import type { EventArgs } from '@antv/x6/es/graph/events';
 import type { Graph as X6Graph } from '@antv/x6';
+import { DataUri } from '@antv/x6';
 import { EventNode } from '../react-node';
 
 export const useGraphConfig = createGraphConfig((config) => {
@@ -11,8 +12,11 @@ export const useGraphConfig = createGraphConfig((config) => {
 
   const nodeClickEvent: IEvent<'node:click'> = {
     eventName: 'node:click',
-    callback: (eventArgs, commandService) => {
-      console.log('node:click', commandService, eventArgs);
+    callback: (eventArgs, commandService, _modelService, graph) => {
+      console.log(DataUri.svgToDataUrl);
+      // console.log(graph.getNeighbors(eventArgs.node, { outgoing: true, incoming: false }));
+      console.log(graph, '>>>>>>>>>>');
+      // console.log('node:click', commandService, eventArgs, eventArgs);
     },
   };
 
@@ -29,8 +33,19 @@ export const useGraphConfig = createGraphConfig((config) => {
   };
 
   config.setX6Config({
-    /** 历史记录 */
-    history: true,
+    /** 历史记录 https://x6.antv.vision/zh/docs/api/graph/history#ignoreadd-ignoreremove-ignorechange */
+    history: {
+      enabled: true,
+      ignoreAdd: false,
+      ignoreRemove: false,
+      ignoreChange: false,
+      // beforeAddCommand: (event, args) => {
+      //   console.log(event, args, '>>>>>>>>>>>>');
+      // },
+      // afterAddCommand: (event, args, c) => {
+      //   console.log(event, args, c, '>>>>>>>>>>>>>afterAddCommand');
+      // },
+    },
     grid: {
       visible: true,
       size: 20,
@@ -60,7 +75,13 @@ export const useGraphConfig = createGraphConfig((config) => {
    * 3. 添加自定义边
    */
   // config.mergeX6Config(options);
+  const add: IEvent<'node:added'> = {
+    eventName: 'node:added',
+    callback: () => {
+      console.log('123');
+    },
+  };
 
   /** 添加事件 */
-  config.setEvents([nodeClickEvent, nodeDoubleClick]);
+  config.setEvents([add, nodeClickEvent, nodeDoubleClick]);
 });

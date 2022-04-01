@@ -11,6 +11,7 @@ import {
 } from '@antv/xflow';
 
 import { Menu, Dropdown } from 'antd';
+import { NODE_ACTIONS } from '../../constants';
 // import { Menu, Dropdown } from '@antv/x6-react-components';
 // import '@antv/x6-react-components/es/menu/style/index.css';
 // import '@antv/x6-react-components/es/dropdown/style/index.css';
@@ -20,13 +21,13 @@ import './index.less';
 const NODE_COMMON_PROPS = {
   width: 160,
   height: 32,
-} as const;
+};
 
 const addNode = async (app: IApplication, args: NsNodeCmd.AddNode.IArgs) => {
   const result = await app.executeCommand<
     NsNodeCmd.AddNode.IArgs,
     NsNodeCmd.AddNode.IResult
-  >(XFlowNodeCommands.ADD_NODE.id, args);
+  >(XFlowNodeCommands[NODE_ACTIONS.add].id, args);
 
   return result.contextProvider().getResult();
 };
@@ -43,30 +44,16 @@ const EventNode: NsGraph.INodeRender = (props) => {
   const app = useXFlowApp();
 
   const onMenuItemClick = async ({ key }: { key: string }) => {
-    if (key === 'add-node') {
+    if (key === 'add-node-edge' || key === 'add-node') {
       const node = await addNode(app, {
         nodeConfig: {
           id: uuidv4(),
-          x: 100,
-          y: 50,
-          label: '新增节点',
-          ...NODE_COMMON_PROPS,
-        },
-      });
-    }
-
-    if (key === 'add-node-edge') {
-      const node = await addNode(app, {
-        nodeConfig: {
-          id: uuidv4(),
-          x: 100,
-          y: 50,
           label: '新增节点',
           ...NODE_COMMON_PROPS,
         },
       });
 
-      if (!node.err) {
+      if (!node.err && key === 'add-node-edge') {
         addEdge(app, {
           edgeConfig: {
             id: uuidv4(),

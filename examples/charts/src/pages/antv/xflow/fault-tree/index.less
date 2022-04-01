@@ -1,6 +1,8 @@
 @import '~@antv/xflow/dist/index.css';
 @import './var.less';
 
+@toolbar-prefix: ~'@{root-prefix}-toolbar';
+
 // .@{wrapper-prefix} {
 .fault-tree-container {
   height: 70vh;
@@ -8,5 +10,16 @@
 
   .xflow-app-workspace {
     position: relative;
+
+    .@{toolbar-prefix} {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .xflow-toolbar {
+        position: static;
+      }
+    }
   }
 }

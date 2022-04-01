@@ -1,19 +1,31 @@
-import React from 'react';
 import {
   createCtxMenuConfig,
   XFlowEdgeCommands,
   XFlowNodeCommands,
   MenuItemType,
-  NsEdgeCmd,
-  NsNodeCmd,
+  IconStore,
   MODELS,
   uuidv4,
+  NsGraph,
 } from '@antv/xflow';
-import type { RxModel, IMenuOptions } from '@antv/xflow';
-import { Button, Tooltip } from 'antd';
+import type { RxModel, NsNodeCmd, NsEdgeCmd, IMenuOptions } from '@antv/xflow';
+import {
+  DeleteOutlined,
+  ReloadOutlined,
+  PlusCircleFilled,
+} from '@ant-design/icons';
 import { Random } from 'mockjs';
+import {
+  nodeActionOptions,
+  NODE_ACTION_HOTKEY,
+  NODE_ACTION_ICON_MAP,
+} from '../constants';
 
 export namespace NsCustomMenuItems {
+  IconStore.set(NODE_ACTION_ICON_MAP.add, PlusCircleFilled);
+  IconStore.set(NODE_ACTION_ICON_MAP.del, DeleteOutlined);
+  IconStore.set(NODE_ACTION_ICON_MAP.update, ReloadOutlined);
+
   export const EMPTY_MENU: IMenuOptions = {
     id: 'EMPTY_MENU_ITEM',
     label: '暂无可用',
@@ -43,42 +55,98 @@ export namespace NsCustomMenuItems {
     },
   };
 
-  export const RANDOM_NODE_NAME: IMenuOptions = {
-    id: 'RANDOM_NODE_NAME',
-    label: '随机设置名称',
-    hotkey: 'update',
-    // type: MenuItemType.Root,
-    iconName: 'DeleteOutlined',
-    onClick: async ({ target, commandService }) => {
-      commandService.executeCommand<
-        NsNodeCmd.UpdateNode.IArgs,
-        NsEdgeCmd.UpdateEdge.IResult
-      >(XFlowNodeCommands.UPDATE_NODE.id, {
-        nodeConfig: {
-          ...target.data,
-          id: target?.data?.id,
-          label: Random.city(),
-        },
-        updateNodeService: async () => {
-          console.log('>>>>>>>>>>>>>>>>>>>');
-        },
-      });
-    },
-  };
+  export const NODE_MENUS: IMenuOptions[] = nodeActionOptions.map(
+    ({ key, label }) => {
+      return {
+        id: key,
+        label,
+        type: MenuItemType.Leaf,
+        hotkey: NODE_ACTION_HOTKEY[key],
+        iconName: NODE_ACTION_ICON_MAP[key],
+        onClick: async ({ target, menuItem, commandService }) => {
+          switch (menuItem.id) {
+            case 'add':
 
-  export const NODE_LIKE: IMenuOptions = {
-    id: 'NODE_LINK',
-    label: 'NODE_LINK',
-    render: ({ target }) => {
-      return (
-        <Tooltip title="自定义渲染">
-          <Button size="small" block type="link">
-            {target.data?.label}
-          </Button>
-        </Tooltip>
-      );
-    },
-  };
+            case 'add-node-edge':
+              const afterNode = (
+                await commandService.executeCommand<
+                  NsNodeCmd.AddNode.IArgs,
+                  NsNodeCmd.AddNode.IResult
+                >(XFlowNodeCommands.ADD_NODE.id, {
+                  nodeConfig: {
+                    label,
+                    id: uuidv4(),
+                    width: 100,
+                    height: 30,
+                  },
+                })
+              )
+                ?.contextProvider()
+                .getResult();
+              if (
+                menuItem.id === 'add-node-edge' &&
+                !afterNode?.err &&
+                afterNode?.nodeConfig
+              ) {
+                commandService.executeCommand<
+                  NsEdgeCmd.AddEdge.IArgs,
+                  NsEdgeCmd.AddEdge.IResult
+                >(XFlowEdgeCommands.ADD_EDGE.id, {
+                  edgeConfig: {
+                    id: uuidv4(),
+                    target: afterNode?.nodeConfig.id,
+                    source: target.data?.id as string,
+                  },
+                });
+              }
+              break;
+            case 'del':
+              commandService.executeCommand<
+                NsNodeCmd.DelNode.IArgs,
+                NsNodeCmd.DelNode.IResult
+              >(XFlowNodeCommands.DEL_NODE.id, {
+                nodeConfig: target.data as NsGraph.INodeConfig,
+                options: {
+                  /** 是否删除链接线 */
+                  // disconnectEdges: true,
+                  /** 是否触发删除事件 */
+                  // silent: true,
+                },
+              });
+              break;
+            case 'update':
+              commandService.executeCommand<
+                NsNodeCmd.UpdateNode.IArgs,
+                NsNodeCmd.UpdateNode.IResult
+              >(XFlowNodeCommands.UPDATE_NODE.id, {
+                nodeConfig: {
+                  ...target.data,
+                  label: Random.city(),
+                } as NsGraph.INodeConfig,
+              });
+              break;
+
+            default:
+              break;
+          }
+        },
+      };
+    }
+  );
+
+  // export const NODE_LIKE: IMenuOptions = {
+  //   id: 'NODE_LINK',
+  //   label: 'NODE_LINK',
+  //   render: ({ target }) => {
+  //     return (
+  //       <Tooltip title="自定义渲染">
+  //         <Button size="small" block type="link">
+  //           {target.data?.label}
+  //         </Button>
+  //       </Tooltip>
+  //     );
+  //   },
+  // };
 }
 
 export const useCtxMenuConfig = createCtxMenuConfig((config, proxy) => {
@@ -91,14 +159,10 @@ export const useCtxMenuConfig = createCtxMenuConfig((config, proxy) => {
         case 'node':
           model.setValue({
             id: XFlowEdgeCommands.DEL_EDGE.id,
-            label: '删除边',
-            hotkey: 'Delete',
+            label: '节点操作',
+            hotkey: 'node',
             type: MenuItemType.Root,
-            submenu: [
-              NsCustomMenuItems.RANDOM_NODE_NAME,
-              NsCustomMenuItems.SEPARATOR,
-              NsCustomMenuItems.NODE_LIKE,
-            ],
+            submenu: NsCustomMenuItems.NODE_MENUS,
             onClick: async () => {},
           });
           break;

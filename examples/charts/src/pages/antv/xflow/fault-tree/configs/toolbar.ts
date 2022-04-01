@@ -1,4 +1,3 @@
-import React from 'react';
 import {
   NsGraph,
   MODELS,
@@ -11,12 +10,11 @@ import {
   IToolbarItemOptions,
   DisposableCollection,
   CANVAS_SCALE_TOOLBAR_CONFIG,
-  // XFlowNodeCommands,
-  // CANVAS_SCALE_TOOLBAR_CONFIG,
 } from '@antv/xflow';
 import {
   SaveOutlined,
   PlusOutlined,
+  RightOutlined,
   MinusOutlined,
   SettingOutlined,
   GatewayOutlined,
@@ -26,11 +24,15 @@ import {
   FullscreenOutlined,
   FullscreenExitOutlined,
 } from '@ant-design/icons';
-import { message } from 'antd';
+import { TOOLTIP_PROPS } from '../helpers';
+import { DEFAULT_LAYOUT } from '../constants';
+
+// 可参考: https://github.com/antvis/XFlow/blob/a5acdf4358983332a906e02d76e9ebd4002ed815/packages/xflow-extension/src/canvas-scale-toolbar/config.tsx#L123
 
 namespace FaultTreeToolbarConfig {
   /** 上一步 */
   IconStore.set('RollbackOutlined', RollbackOutlined);
+  IconStore.set('RightOutlined', RightOutlined);
   IconStore.set('SaveOutlined', SaveOutlined);
   /** 框选 */
   IconStore.set('GatewayOutlined', GatewayOutlined);
@@ -49,8 +51,10 @@ namespace FaultTreeToolbarConfig {
   export interface IToolbarState {
     /** 是否开启多选 */
     isMultiSelctionActive: boolean;
-    /** 是否可撤回 */
+    /** 是否可撤销 */
     undoable?: boolean;
+    /** 是否可重做 */
+    redoable?: boolean;
   }
 
   /** 扩展配置 */
@@ -68,9 +72,12 @@ namespace FaultTreeToolbarConfig {
     } = await MODELS.GRAPH_ENABLE_MULTI_SELECT.useValue(modelService);
 
     /** @todo: 貌似是不生效 MODELS.COMMAND_UNDOABLE.getModel(modelService) */
-    // const undoable = await MODELS.HISTORY_UNDOABLE.useValue(modelService);
+    const undoable = await MODELS.HISTORY_UNDOABLE.useValue(modelService);
+    const redoable = await MODELS.HISTORY_REDOABLE.useValue(modelService);
 
     return {
+      redoable,
+      undoable,
       isMultiSelctionActive,
     } as FaultTreeToolbarConfig.IToolbarState;
   };
@@ -85,22 +92,32 @@ namespace FaultTreeToolbarConfig {
         iconName: 'RollbackOutlined',
         tooltip: '上一步(Cmd+z,Ctrl+z)',
         isEnabled: state.undoable,
+        ...TOOLTIP_PROPS,
         name: 'true',
         onClick: async ({ commandService }) => {
-          message.success(`上一步---> ${commandService.isRedoable}`);
+          /** @BUG 频繁在撤销和重做间徘徊 commandService.undoCommand();  */
           if (state.undoable || commandService.isUndoable) {
-            commandService.undoCommand();
+            commandService.executeCommand<NsGraphCmd.GraphHistoryUndo.IArgs>(
+              XFlowGraphCommands.GRAPH_HISTORY_UNDO.id,
+              {
+                enabled: true,
+              }
+            );
           }
         },
       },
       {
         id: XFlowGraphCommands.GRAPH_HISTORY_REDO.id,
-        icon: <RollbackOutlined style={{ transform: 'rotateY(180deg)' }} />,
+        iconName: 'RightOutlined',
+        isEnabled: state.redoable,
         tooltip: '下一步(Cmd+Shift+z,Ctrl+y)',
         onClick: async ({ commandService }) => {
-          message.success(`下一步 ----> ${commandService.isRedoable}`);
-          if (commandService.isRedoable) {
-            commandService.redoCommand();
+          /** @BUG commandService.redoCommand() 同上 */
+          if (state.redoable || commandService.isRedoable) {
+            commandService.executeCommand<NsGraphCmd.GraphHistoryRedo.IArgs>(
+              XFlowGraphCommands.GRAPH_HISTORY_REDO.id,
+              {}
+            );
           }
         },
       },
@@ -125,7 +142,6 @@ namespace FaultTreeToolbarConfig {
             {
               saveGraphDataService: (meta, graphData): any => {
                 console.log(meta, graphData, '保存');
-                message.success('保存');
               },
             }
           );
@@ -139,9 +155,9 @@ namespace FaultTreeToolbarConfig {
           commandService.executeCommand<NsGraphCmd.GraphLayout.IArgs>(
             XFlowGraphCommands.GRAPH_LAYOUT.id,
             {
+              ...DEFAULT_LAYOUT,
               customLayout: (graphData: NsGraph.IGraphData): any => {
                 console.log(graphData, '@todo 自动排列布局');
-                message.success('自动排列布局');
               },
             }
           );
@@ -159,7 +175,7 @@ namespace FaultTreeToolbarConfig {
             // {
             //   commandId: XFlowGraphCommands.GRAPH_RENDER.id,
             //   getCommandOption: async (ctx) => {
-            //     console.log(ctx.getGraphConfig(), '>>>>>>>>>>>graphData');
+            //     console.log(ctx, '>>>>>>>>>>>graphData');
             //     return { args: {} as NsGraphCmd.GraphRender.IArgs };
             //   },
             // },
@@ -175,6 +191,8 @@ namespace FaultTreeToolbarConfig {
     return [
       await MODELS.SELECTED_CELLS.getModel(modelService),
       await MODELS.COMMAND_UNDOABLE.getModel(modelService),
+      await MODELS.HISTORY_REDOABLE.getModel(modelService),
+      await MODELS.HISTORY_UNDOABLE.getModel(modelService),
     ];
   };
 
@@ -294,6 +312,7 @@ export const useToolbarConfig = createToolbarConfig((toolbarConfig) => {
           toolbar.mainGroups = mainItems;
         });
       };
+
       const mainModels = await FaultTreeToolbarConfig.getMainDependencies(
         modelService
       );

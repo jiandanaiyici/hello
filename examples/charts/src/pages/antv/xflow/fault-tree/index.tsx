@@ -1,117 +1,90 @@
 import React, { useRef } from 'react';
 import {
   XFlow,
-  IAppLoad,
-  NsGraphCmd,
   XFlowCanvas,
   KeyBindings,
-  IApplication,
+  CanvasToolbar,
   CanvasMiniMap,
-  XFlowGraphCommands,
   CanvasContextMenu,
+  // createComponentModel,
 } from '@antv/xflow';
+import type { IAppLoad, IApplication } from '@antv/xflow';
 import { Graph } from '@antv/x6';
 
-import { FaultTreeToolbar } from './toolbar';
 import type { XFlowDemoProps } from './types';
 import {
+  useCmdConfig,
   useGraphConfig,
   useCtxMenuConfig,
+  useToolbarConfig,
   useKeybindingConfig,
-  useCmdConfig,
+  useModelServiceConfig,
 } from './configs';
+import { initGraphCmds } from './helpers';
+import { DEFAULT_LAYOUT } from './constants';
 
 import './index.less';
 
 const FaultTree: React.FC<XFlowDemoProps> = React.memo<XFlowDemoProps>(
   (props) => {
     const appInstanceRef = useRef<Graph>();
-    const graphRef = useRef<IApplication>();
-    const { minimap, graphData, layoutType } = props;
-    const graphConfig = useGraphConfig();
+    const graphRef = useRef<IApplication | null>(null);
+    const { minimap, className, style, graphData, layoutType } = props;
+    /** 配置画布信息 */
+    const graphConfig = useGraphConfig(props);
+    /** 配置键盘绑定 */
     const keybindingConfig = useKeybindingConfig(props);
+    /** 右键菜单配置 */
     const ctxMenuConfig = useCtxMenuConfig(props);
+    /** 配置命令 */
     const cmdConfig = useCmdConfig(props);
+    /** 配置工具栏 */
+    const toolbarConfig = useToolbarConfig(props);
+
+    /** 配置全局注册 model */
+    const modelServiceConfig = useModelServiceConfig(props);
+
+    // const a = useLoadingState(graphRef.current?.modelService);
+    // const [state, setState] = createComponentModel<NsLoadingModel.IState>({
+    //   loading: false,
+    // });
+    // console.log(a, '>>>>>>>>>>>>>>state');
 
     const onLoad: IAppLoad = async (app: IApplication) => {
-      appInstanceRef.current = await app.getGraphInstance();
+      const graph = await app.getGraphInstance();
+      appInstanceRef.current = graph;
       graphRef.current = app;
+      initGraphCmds(graphRef.current, graphData);
+      // setState({ loading: true });
     };
 
     /** @todo: 是否可以根据 createModelSericeConfig 通过 watch 方式更新 ? */
     React.useEffect(() => {
-      const updateGrid = async () => {
-        if (graphRef.current) {
-          await graphRef.current.executeCommandPipeline([
-            {
-              commandId: XFlowGraphCommands.GRAPH_LAYOUT.id,
-              getCommandOption: async () => {
-                // const { graphData: data } = ctx?.getResult();
-                return {
-                  args: {
-                    graphData,
-                    layoutType,
-                    layoutOptions: {
-                      type: 'dagre',
-                      rankdir: 'LR',
-                      nodesep: 10,
-                      ranksep: 80,
-                    },
-                  } as NsGraphCmd.GraphLayout.IArgs,
-                };
-              },
-            },
-            {
-              commandId: XFlowGraphCommands.GRAPH_ZOOM.id,
-              getCommandOption: async () => {
-                return {
-                  args: {
-                    factor: 'real',
-                  } as NsGraphCmd.GraphZoom.IArgs,
-                };
-              },
-            },
-            {
-              commandId: XFlowGraphCommands.GRAPH_RENDER.id,
-              getCommandOption: async () => {
-                return {
-                  args: {
-                    graphData,
-                  },
-                };
-              },
-            },
-          ]);
-        }
-      };
-      updateGrid();
+      initGraphCmds(graphRef.current, graphData);
     }, [layoutType, graphData]);
 
     return (
-      // <div className={basePrefix}>
       <XFlow
+        style={style}
+        onLoad={onLoad}
+        className={className}
         graphData={graphData}
         commandConfig={cmdConfig}
-        onLoad={onLoad}
-        graphLayout={{
-          layoutType,
-          layoutOptions: {
-            type: layoutType,
-            rankdir: 'TB',
-            nodesep: 60,
-            ranksep: 40,
-          },
-        }}
+        graphLayout={DEFAULT_LAYOUT}
+        modelServiceConfig={modelServiceConfig}
       >
         {/* {props.children} */}
-        <FaultTreeToolbar />
+        <CanvasToolbar
+          layout="horizontal"
+          config={toolbarConfig}
+          position={{ top: 0, left: 0 }}
+        />
         <KeyBindings config={keybindingConfig} />
         {minimap && <CanvasMiniMap />}
         <XFlowCanvas config={graphConfig}>
           <CanvasContextMenu config={ctxMenuConfig} />
         </XFlowCanvas>
       </XFlow>
-      // </div>
     );
   }
 );

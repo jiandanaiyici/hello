@@ -30,6 +30,13 @@ enum DelShortCut {
   CtrlDelete = 'Ctrl+Delete',
 }
 
+/** 添加节点 */
+enum AddNodeShortCut {
+  CmdAdd = 'Cmd+Alt+N',
+  CtrlAdd = 'Ctrl+Alt+N',
+  CmdAddEdgeNode = 'Cmd+Alt+N+E',
+}
+
 /** 保存快捷键 */
 enum SaveShortCut {
   CmdSave = 'Cmd+Shift+S',
@@ -315,11 +322,24 @@ export const useKeybindingConfig = createKeybindingConfig(
         },
       ];
 
+      const nodeKeys: IKeyBinding[] = [
+        {
+          id: `${BASE_KEY_PRIFIX}_ADD_NODE`,
+          keybinding: Platform.IS_MAC
+            ? AddNodeShortCut.CmdAdd
+            : AddNodeShortCut.CtrlAdd,
+          callback: async () => {
+            console.log('123');
+          },
+        },
+      ];
+
       const allKeys = [
         ...zooms,
         ...hisotryKeys,
         saveKey,
         ...delKeys,
+        ...nodeKeys,
         ...copyPasteKeys,
       ];
 

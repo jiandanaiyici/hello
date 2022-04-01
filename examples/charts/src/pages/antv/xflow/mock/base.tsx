@@ -1,11 +1,11 @@
 import type { NsGraph } from '@antv/xflow';
 import { uuidv4 } from '@antv/xflow';
 
-// NodeConfig
 const NODE_COMMON_PROPS = {
   width: 160,
   height: 32,
-} as const;
+};
+
 const EDGE_COMMON_PROPS = {
   attrs: {
     line: {
@@ -19,7 +19,7 @@ const EDGE_COMMON_PROPS = {
       strokeWidth: 1,
     },
   },
-} as const;
+};
 
 // 基础图形
 export const getGraphData = () => {
