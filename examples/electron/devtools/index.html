@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>主窗口</title>
+    <link rel="stylesheet" href="./index.css" />
+    <script>
+      window.onload = () => {
+        const openWebivew = document.getElementById('openWebview');
+        const input = document.getElementById('input');
+        input.addEventListener('input', (event) => {
+          input.value = event.target.value;
+        });
+        openWebivew.onclick = () => {
+          window.__APIS__.openNewWin(input.value);
+        };
+      };
+    </script>
+  </head>
+  <body>
+    <div class="wrapper">
+      <input
+        id="input"
+        placeholder="输入想要打开的地址"
+        value="https://developer.mozilla.org"
+      />
+      <button type="button" id="openWebview">打开新窗口并设置devTools</button>
+    </div>
+  </body>
+</html>
