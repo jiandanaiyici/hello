@@ -8,13 +8,19 @@
     <link rel="stylesheet" href="./index.css" />
     <script>
       window.onload = () => {
-        const openWebivew = document.getElementById('openWebview');
+        const openNewWin = document.getElementById('openNewWin');
         const input = document.getElementById('input');
         input.addEventListener('input', (event) => {
           input.value = event.target.value;
         });
-        openWebivew.onclick = () => {
+        openNewWin.onclick = () => {
           window.__APIS__.openNewWin(input.value);
+        };
+
+        /** 加载 webview */
+        const loadWebview = document.getElementById('loadWebview');
+        loadWebview.onclick = () => {
+          window.__APIS__.loadWebviewPage();
         };
       };
     </script>
@@ -26,7 +32,12 @@
         placeholder="输入想要打开的地址"
         value="https://developer.mozilla.org"
       />
-      <button type="button" id="openWebview">打开新窗口并设置devTools</button>
+      <button class="ant-btn" type="button" id="openNewWin">
+        打开新窗口并设置DevTools
+      </button>
+      <button class="ant-btn" type="button" id="loadWebview">
+        加载 webview
+      </button>
     </div>
   </body>
 </html>

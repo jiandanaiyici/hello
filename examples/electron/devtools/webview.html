@@ -5,18 +5,65 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>webview 标签</title>
-    <link rel="stylesheet" href="./index.css">
+    <link rel="stylesheet" href="./index.css" />
   </head>
   <body>
-    <div>
-      <webview id="browser" src="https://baidu.com"></webview>
-      <webview id="browser" src="https://baidu.com"></webview>
+    <div class="webview-wrapper">
+      <div>
+        <button class="ant-btn" id="open">打开控制台</button>
+        <button class="ant-btn" id="close">关闭控制台</button>
+        <button class="ant-btn" id="setting">设置控制台内容</button>
+      </div>
+      <webview id="browser" src="https://developer.mozilla.org"></webview>
+      <!-- <webview id="devtools" src="https://developer.mozilla.org"></webview> -->
     </div>
 
     <script>
       window.onload = () => {
-        console.log('webview');
-      }
+        const emittedOnce = (element, eventName) =>
+          new Promise((resolve) => {
+            element.addEventListener(eventName, (event) => resolve(event), {
+              once: true,
+            });
+          });
+
+        const openBtn = document.getElementById('open');
+
+        const browserView = document.getElementById('browser');
+        // const devtoolsView = document.getElementById('devtools');
+        /** 只能在加载结束后才能获取到对应 ID */
+        const browserReady = emittedOnce(browserView, 'dom-ready');
+        // const devtoolsReady = emittedOnce(devtoolsView, 'dom-ready');
+
+        /** 打开控制台: 除了在主进程中控制, 还可以直接使用 browserView.openDevTools */
+        openBtn.onclick = () => {
+          Promise.all([browserReady]).then(() => {
+            const targetId = browserView.getWebContentsId();
+            window.__APIS__.openWebviewDevtools(targetId);
+          });
+        };
+
+        /** 关闭控制台 */
+        const closeBtn = document.getElementById('close');
+        closeBtn.onclick = () => {
+          browserReady.then(() => {
+            window.__APIS__.closeWebviewDevtools(
+              browserView.getWebContentsId()
+            );
+          });
+        };
+
+        /** 设置控制台内容 */
+        const settingBtn = document.getElementById('setting');
+        settingBtn.onclick = () => {
+          Promise.all([browserReady]).then(() => { // devtoolsReady
+            window.__APIS__.settingDevToolContents(
+              browserView.getWebContentsId(),
+              // devtoolsView.getWebContentsId()
+            );
+          });
+        };
+      };
     </script>
   </body>
 </html>

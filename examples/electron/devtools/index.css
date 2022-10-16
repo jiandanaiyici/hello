@@ -1,5 +1,11 @@
 @import url('https://unpkg.com/reset-css/reset.css');
 
+html,
+body,
+.webview-wrapper {
+  height: 100%;
+}
+
 .wrapper {
   padding: 20px;
   display: grid;
@@ -7,7 +13,21 @@
   grid-template-columns: 1fr 200px;
 }
 
-button {
+.webview-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.webview-wrapper webview {
+  flex: 1;
+}
+
+.hidden {
+  height: 0px;
+  /* display: none; */
+}
+
+.ant-btn {
   color: #fff;
   border-color: #1890ff;
   background: #1890ff;
