@@ -1,21 +1,25 @@
 /** @type {import('@docusaurus/types').DocusaurusConfig} */
 module.exports = {
-  title: '前端面试',
-  url: 'https://github.com/niexiaofei1988/hello-interview',
+  title: '前端汇总',
+  url: 'https://hello-interview.surge.sh',
   baseUrl: '/',
-  onBrokenLinks: 'throw',
+  onBrokenLinks: 'warn',
   onBrokenMarkdownLinks: 'warn',
   favicon: 'img/favicon.ico',
   organizationName: 'niexiaofei1988',
   projectName: 'hello-interview',
-  // themes: ['@docusaurus/theme-live-codeblock'],
+  clientModules: [require.resolve('./hm.js')],
   themeConfig: {
     colorMode: {
       defaultMode: 'light',
       disableSwitch: true,
     },
+    docs: {
+      sidebar: {
+        hideable: true,
+      },
+    },
     // sidebarCollapsible: false,
-    hideableSidebar: true,
     prism: {
       theme: require('prism-react-renderer/themes/dracula'),
       darkTheme: require('prism-react-renderer/themes/dracula'),
@@ -56,10 +60,7 @@ module.exports = {
           editUrl:
             'https://github.com/niexiaofei1988/hello-interview/tree/main',
           // showLastUpdateAuthor: true,
-          // showLastUpdateTime: true,
-        },
-        algorithm: {
-          sidebarPath: require.resolve('./routes/algorithm.js'),
+          showLastUpdateTime: true,
         },
         // sitemap: {},
         theme: {
@@ -68,34 +69,34 @@ module.exports = {
       },
     ],
   ],
-  plugins: [
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'algorithm',
-        path: 'algorithm',
-        routeBasePath: 'algorithm',
-        sidebarPath: require.resolve('./routes/algorithm.js'),
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'designpatterns',
-        path: 'designpatterns',
-        routeBasePath: 'designpatterns',
-        sidebarPath: require.resolve('./routes/designpatterns.js'),
-      },
-    ],
-    [
-      '@docusaurus/plugin-content-docs',
-      {
-        id: 'resource',
-        path: 'resource',
-        routeBasePath: 'resource',
-        sidebarPath: require.resolve('./routes/resource.js'),
-      },
-    ],
-    //   '@docusaurus/plugin-client-redirects',
-  ],
+  // plugins: [
+  //   [
+  //     '@docusaurus/plugin-content-docs',
+  //     {
+  //       id: 'algorithm',
+  //       path: 'algorithm',
+  //       routeBasePath: 'algorithm',
+  //       sidebarPath: require.resolve('./routes/algorithm.js'),
+  //     },
+  //   ],
+  //   [
+  //     '@docusaurus/plugin-content-docs',
+  //     {
+  //       id: 'designpatterns',
+  //       path: 'designpatterns',
+  //       routeBasePath: 'designpatterns',
+  //       sidebarPath: require.resolve('./routes/designpatterns.js'),
+  //     },
+  //   ],
+  //   [
+  //     '@docusaurus/plugin-content-docs',
+  //     {
+  //       id: 'resource',
+  //       path: 'resource',
+  //       routeBasePath: 'resource',
+  //       sidebarPath: require.resolve('./routes/resource.js'),
+  //     },
+  //   ],
+  //   //   '@docusaurus/plugin-client-redirects',
+  // ],
 };
